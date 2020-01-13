@@ -27,7 +27,7 @@
         <pipuck_rangefinders implementation="default" show_rays="true" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="/Users/harryzhu/Desktop/argos3-vns2/build/experiment/pipuck.lua" />
+      <params script="pipuck.lua" />
     </lua_controller>
      <!-- Drone Controller -->
     <lua_controller id="drone">
@@ -43,7 +43,7 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="/Users/harryzhu/Desktop/argos3-vns2/build/experiment/drone.lua" />
+      <params script="drone.lua" />
     </lua_controller>
   </controllers>
 
