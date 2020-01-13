@@ -50,7 +50,7 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="/Users/harryzhu/Desktop/argos3-vns2/build/loop_functions/libvns_loop_functions"
+  <loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
                   label="vns_loop_functions"/>
 
   <!-- *********************** -->
@@ -82,27 +82,17 @@
       </entity>
     </distribute-->
     <drone id="drone0">
-      <body position="-3,0,0" orientation="-60,0,0"/>
+      <body position="-3,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
-    <drone id="drone1">
-      <body position="-1.5,0,0" orientation="-30,0,0"/>
-      <controller config="drone"/>
-    </drone>
-    <drone id="drone2">
-      <body position="0,0,0" orientation="0,0,0"/>
-      <controller config="drone"/>
-    </drone>
-    <drone id="drone3">
-      <body position="1.5,0,0" orientation="30,0,0"/>
-      <controller config="drone"/>
-    </drone>
-    <drone id="drone4">
-      <body position="3,0,0" orientation="60,0,0"/>
-      <controller config="drone"/>
-    </drone>
+
     <!-- add pi-puck robots -->
-    <distribute>
+    <pipuck id="pipuck0">
+      <body position="-3,0,0" orientation="90,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
+
+    <!--distribute>
       <position method="uniform" min="-4.5,-4.5,0" max="4.5,4.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <entity quantity="20" max_trials="100">
@@ -110,7 +100,7 @@
           <controller config="pipuck"/>
         </pipuck>
       </entity>
-    </distribute>
+    </distribute-->
   </arena>
 
   <!-- ******************* -->
@@ -138,10 +128,10 @@
   <!-- * Visualization * -->
   <!-- ****************** -->
   <visualization>
-    <qt-opengl lua_editor="false" show_boundary="false">
-      <user_functions library="/Users/harryzhu/Desktop/argos3-vns2/build/qtopengl_user_functions/libvns_qtopengl_user_functions"
+    <qt-opengl lua_editor="true" show_boundary="false">
+		<user_functions library="../argos3-vns2/build/qtopengl_user_functions/libvns_qtopengl_user_functions"
                       label="vns_qtopengl_user_functions" >
-         <camera_paths>
+         <!--camera_paths>
             <path duration="250">
               <start position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
               <end position=" 12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
@@ -174,7 +164,7 @@
               <start position="-12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
               <end position="0, -15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
             </path>
-         </camera_paths>
+         </camera_paths-->
       </user_functions>
       <camera>
         <placement idx="0" position="  0,  0, 20"  look_at="0,0,10"   lens_focal_length="50" up="1,0,0"/>

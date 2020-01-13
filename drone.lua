@@ -1,34 +1,37 @@
--- trajectory = { time: number -> { position: vector3, yaw: number }}
-trajectory = {
-   [10] =  { vector3( 0,  0, 1.25),  0.0},
-   [20] =  { vector3( 1,  1, 1.25),  0.0},
-   [30] =  { vector3(-1,  1, 1.25),  0.0},
-   [40] =  { vector3(-1, -1, 1.25),  0.0},
-   [50] =  { vector3( 1, -1, 1.25),  0.0},
-}
+package.path = package.path .. ";RobotAPI/?.lua"
+package.path = package.path .. ";VNS/?.lua"
+package.path = package.path .. ";Tools/?.lua"
+
+require("droneAPI")
+VNS = require("VNS")
+BehaviorTree = require("luabt")
+DMSG = require("DebugMessage")
+DMSG.enable()
+
+local vns
+local seenRobots = {}
 
 function init()
-   for index, camera in ipairs(robot.cameras_system) do
-      camera.enable()
-   end
-   time = 1
+	drone_set_height(1.5)
+	drone_enable_cameras()
+
+	vns = VNS.create(robot.id)
+
+	bt = BehaviorTree:create(VNS.create_vns_node(vns, seenRobots))
 end
 
 function step()
-   for timestamp, path in pairs(trajectory) do
-      if time == timestamp then
-         robot.flight_system.set_targets(table.unpack(path))
-         --log(tostring(time) .. ": " .. tostring(robot.flight_system.position))
-      end
-   end
-   time = time + 1
-   if robot.debug then
-      robot.debug.draw("arrow(blue)(0,0,0)(0,0,-0.50)")
-   end
+	-- check height
+	if drone_check_height(1.5) == false then drone_set_height(1.5) return end
+
+	process_time()
+	--drone_set_speed(1.0, 0, 0, 0)
+	
+	drone_clear_seenRobots(seenRobots)
+	drone_add_seenRobots(seenRobots, drone_detect_tags())
 end
 
 function reset()
-   init()
 end
 
 function destroy()
