@@ -46,10 +46,10 @@ function drone_detect_tags()
 			if index[tag.id] == nil then
 				index[tag.id] = true
 				tags[#tags + 1] = {
-					id = tag.id,
-					position = camera.transform.position + 
-					           tag.position:rotate(camera.transform.orientation),
-					orientation = camera.transform.orientation * tag.orientation
+					idS = "pipuck" .. math.floor(tag.id),
+					positionV3 = camera.transform.position + 
+					             tag.position:rotate(camera.transform.orientation),
+					orientationQ = camera.transform.orientation * tag.orientation
 				}
 			end
 		end
@@ -66,7 +66,7 @@ end
 
 function drone_add_seenRobots(seenRobots, tags)
 	for i, v in ipairs(tags) do
-		seenRobots[v.id] = v
-		seenRobots[v.id].robotTypeS = "pipuck"
+		seenRobots[v.idS] = v
+		seenRobots[v.idS].robotTypeS = "pipuck"
 	end
 end

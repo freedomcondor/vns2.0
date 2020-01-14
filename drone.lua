@@ -8,16 +8,19 @@ BehaviorTree = require("luabt")
 DMSG = require("DebugMessage")
 DMSG.enable()
 
-local vns
+require("Debugger")
+
+--local vns
 local seenRobots = {}
 
 function init()
 	drone_set_height(1.5)
 	drone_enable_cameras()
 
-	vns = VNS.create(robot.id)
-
-	bt = BehaviorTree:create(VNS.create_vns_node(vns, seenRobots))
+	vns = VNS.create()
+	DMSG("vns")
+	DMSG(vns)
+	bt = BehaviorTree.create(VNS.create_vns_node(vns, seenRobots))
 end
 
 function step()
@@ -25,14 +28,43 @@ function step()
 	if drone_check_height(1.5) == false then drone_set_height(1.5) return end
 
 	process_time()
-	--drone_set_speed(1.0, 0, 0, 0)
-	
 	drone_clear_seenRobots(seenRobots)
+	VNS.Msg.prestep()
+
 	drone_add_seenRobots(seenRobots, drone_detect_tags())
+
+	bt()
+
+	--[[
+	for i, r in pairs(vns.children) do
+		robot.debug.draw("arrow(blue)(0,0,0)" .. 
+			tostring(r.positionV3)
+		)
+		robot.debug.draw("arrow(red)" .. 
+			tostring(r.positionV3) ..
+			tostring(r.positionV3 + vector3(1,0,0):rotate(r.orientationQ))
+		)
+	end
+	--]]
 end
 
 function reset()
+	init()
 end
 
 function destroy()
+end
+
+-----------------------------------------------------------------------
+
+VNS.Msg.sendTable = function(table)
+	robot.wifi.tx_data(table)
+end
+
+VNS.Msg.getTablesAT = function(table)
+	return robot.wifi.rx_data
+end
+
+VNS.Msg.myIDS = function()
+	return robot.id
 end

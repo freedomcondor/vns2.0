@@ -7,6 +7,11 @@ local Connector = {}
 	vns.connector.waitingRobots = {}
 --]]
 
+function Connector.create(vns)
+	vns.connector = {}
+	Connector.reset(vns)
+end
+
 function Connector.reset(vns)
 	vns.connector.waitingRobots = {}
 end
@@ -17,10 +22,10 @@ function Connector.recruit(vns, robotR)
 		--TODO: give vns status in the future
 	vns.connector.waitingRobots[robotR.idS] = {
 		idS = robotR.idS,
-		positionV = robotR.positionV,
+		positionV3 = robotR.positionV3,
 		orientationQ = robotR.orientationQ,
-		robotTypeS = robotR.robotTypeS
-		count = 0
+		robotTypeS = robotR.robotTypeS,
+		count = 0,
 	}
 end
 
@@ -28,17 +33,17 @@ function Connector.update(vns, seenRobots)
 	if type(seenRobots) ~= "table" then return end
 
 	-- update waiting list
-	for idS, robotR in pairs(robotListR) do
+	for idS, robotR in pairs(seenRobots) do
 		if vns.connector.waitingRobots[idS] ~= nil then
-			vns.connector.waitingRobots[idS].positionV = robotR.positionV
+			vns.connector.waitingRobots[idS].positionV3 = robotR.positionV3
 			vns.connector.waitingRobots[idS].orientationQ = robotR.orientationQ
 		end
 	end
 
 	-- update vns children list
-	for idS, robotR in pairs(robotListR) do
+	for idS, robotR in pairs(seenRobots) do
 		if vns.children[idS] ~= nil then
-			vns.children[idS].positionV = robotR.positionV
+			vns.children[idS].positionV3 = robotR.positionV3
 			vns.children[idS].orientationQ = robotR.orientationQ
 			vns.children[idS].updated = true
 		end
@@ -60,9 +65,9 @@ function Connector.step(vns, seenRobots)
 	Connector.waitingCount(vns, seenRobots)
 
 	-- recruit new
-	for idS, robotR in pairs(robotListR) do
+	for idS, robotR in pairs(seenRobots) do
 		if vns.children[idS] == nil and 
-		   vns.connector.waitingCount[idS] == nil and 
+		   vns.connector.waitingRobots[idS] == nil and 
 		   vns.parentS ~= idS and
 		   vns.brainS ~= idS then
 			Connector.recruit(vns, robotR)
@@ -79,7 +84,9 @@ function Connector.step(vns, seenRobots)
 end
 
 function Connector.create_connector_node(vns, seenRobots)
-	return Connector.step
+	return function()
+		Connector.step(vns, seenRobots)
+	end
 end
 
 return Connector
