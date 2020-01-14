@@ -92,6 +92,11 @@
       <controller config="pipuck"/>
     </pipuck>
 
+    <pipuck id="pipuck1">
+      <body position="-2.8,0,0" orientation="90,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
+
     <!--distribute>
       <position method="uniform" min="-4.5,-4.5,0" max="4.5,4.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />

@@ -35,16 +35,18 @@ function step()
 
 	bt()
 
-	--[[
-	for i, r in pairs(vns.children) do
-		robot.debug.draw("arrow(blue)(0,0,0)" .. 
-			tostring(r.positionV3)
+	for i, child in pairs(vns.children) do
+		drawArrow("blue", 
+			tostring(vector3(0,0,0)),
+			tostring(child.positionV3)
 		)
-		robot.debug.draw("arrow(red)" .. 
-			tostring(r.positionV3) ..
-			tostring(r.positionV3 + vector3(1,0,0):rotate(r.orientationQ))
+
+		drawArrow("red", 
+			tostring(child.positionV3),
+			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
 	end
+	--[[
 	--]]
 end
 

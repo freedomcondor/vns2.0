@@ -48,7 +48,7 @@ function drone_detect_tags()
 				tags[#tags + 1] = {
 					idS = "pipuck" .. math.floor(tag.id),
 					positionV3 = camera.transform.position + 
-					             tag.position:rotate(camera.transform.orientation),
+					             vector3(tag.position):rotate(camera.transform.orientation),
 					orientationQ = camera.transform.orientation * tag.orientation
 				}
 			end
