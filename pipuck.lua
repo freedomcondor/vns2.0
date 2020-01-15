@@ -14,11 +14,18 @@ function init()
 end
 
 function step()
-	VNS.Msg.prestep()
+	vns.prestep(vns)
 	pipuck_move(vector3(0.5, -0.5, 0), vector3(0,0,0))
 	bt()
 
-	for i, child in pairs(vns.children) do
+	if vns.parentR ~= nil then
+		drawArrow("green", 
+			tostring(vector3(0,0,0)),
+			tostring(vns.parentR.positionV3)
+		)
+	end
+
+	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
 			tostring(vector3(0,0,0)),
 			tostring(child.positionV3)
