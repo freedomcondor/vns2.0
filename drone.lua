@@ -3,35 +3,31 @@ package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
 require("droneAPI")
-VNS = require("VNS")
-BehaviorTree = require("luabt")
+local VNS = require("VNS")
+local BehaviorTree = require("luabt")
 DMSG = require("DebugMessage")
 DMSG.enable()
 
 require("Debugger")
 
 --local vns
-local seenRobots = {}
-
 function init()
 	drone_set_height(1.5)
 	drone_enable_cameras()
 
-	vns = VNS.create()
-	DMSG("vns")
-	DMSG(vns)
-	bt = BehaviorTree.create(VNS.create_vns_node(vns, seenRobots))
+	vns = VNS.create("drone")
+	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
 function step()
 	-- check height
-	if drone_check_height(1.5) == false then drone_set_height(1.5) return end
+	if drone_check_height(1.5) == false then drone_set_height(1.5) end
 
 	process_time()
-	drone_clear_seenRobots(seenRobots)
+	drone_clear_seenRobots(vns.seenRobots)
 	VNS.Msg.prestep()
 
-	drone_add_seenRobots(seenRobots, drone_detect_tags())
+	drone_add_seenRobots(vns.seenRobots, drone_detect_tags())
 
 	bt()
 

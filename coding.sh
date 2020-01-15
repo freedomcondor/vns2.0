@@ -8,5 +8,7 @@ vim coding.sh -c "
 	tabnew RobotAPI/commonAPI.lua
 
 	tabnew VNS/Connector.lua
+	tabnew VNS/DPConnector.lua
+	vsp VNS/PDConnector.lua
 	tabnew VNS/VNS.lua
 "

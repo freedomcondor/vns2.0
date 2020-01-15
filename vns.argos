@@ -86,6 +86,11 @@
       <controller config="drone"/>
     </drone>
 
+    <drone id="drone1">
+      <body position="0,0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
     <!-- add pi-puck robots -->
     <pipuck id="pipuck0">
       <body position="-3,0,0" orientation="90,0,0"/>

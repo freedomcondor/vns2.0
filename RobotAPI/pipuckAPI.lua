@@ -2,6 +2,8 @@
 --	pipuck api
 --]]
 
+require("commonAPI")
+
 function pipuck_set_velocity(x, y)
 	local max = 0.1
 	if x < -max then x = -max end
