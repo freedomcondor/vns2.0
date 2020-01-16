@@ -43,10 +43,16 @@ function VNS.prestep(vns)
 	vns.Connector.prestep(vns)
 end
 
+function VNS.addChild(vns, robotR)
+	vns.Connector.addChild(vns, robotR)
+end
 function VNS.deleteChild(vns, idS)
 	vns.Connector.deleteChild(vns, idS)
 end
 
+function VNS.addParent(vns, robotR)
+	vns.Connector.addParent(vns, robotR)
+end
 function VNS.deleteParent(vns)
 	vns.Connector.deleteParent(vns)
 end

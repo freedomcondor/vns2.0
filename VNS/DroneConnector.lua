@@ -7,13 +7,19 @@
 local DroneConnector = {}
 
 function DroneConnector.step(vns)
-	-- report my sight to my parent and TODO later assignTarget
-	if vns.parentR ~= nil then
-		vns.Msg.send(vns.parentR.idS, "reportForDuty", {mySight = vns.connector.seenRobots})
+	-- report my sight to all seen pipucks, and drones in parent and children
+	if vns.parentR ~= nil and vns.parentR.robotTypeS == "drone" then
+		vns.Msg.send(vns.parentR.idS, "reportSight", {mySight = vns.connector.seenRobots})
 	end
 
-	for idS, _ in pairs(vns.childrenRT) do
-		vns.Msg.send(idS, "reportForDuty", {mySight = vns.connector.seenRobots})
+	for idS, robotR in pairs(vns.childrenRT) do
+		if robotR.robotTypeS == "drone" then
+			vns.Msg.send(idS, "reportSight", {mySight = vns.connector.seenRobots})
+		end
+	end
+
+	for idS, robotR in pairs(vns.connector.seenRobots) do
+		vns.Msg.send(idS, "reportSight", {mySight = vns.connector.seenRobots})
 	end
 
 	--[[
@@ -22,34 +28,8 @@ function DroneConnector.step(vns)
 	end
 	--]]
 
-	-- if I don't have parent, ack a recruit
-	if vns.parentR == nil then
-		for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "recruit")) do
-			vns.parentR = {
-				idS = msgM.fromS,
-				positionV3 = 
-					vector3(-msgM.dataT.positionV3):rotate(msgM.dataT.orientationQ:inverse()),
-				orientationQ = msgM.dataT.orientationQ:inverse(),
-			}
-
-			if msgM.dataT.fromTypeS == "pipuck" then
-				vns.Msg.send(msgM.fromS, "ack", {
-					positionV3 = vns.connector.seenRobots[msgM.fromS].positionV3,
-					orientationQ = vns.connector.seenRobots[msgM.fromS].orientationQ,
-				})
-			else
-				vns.Msg.send(msgM.fromS, "ack")
-			end
-
-			if vns.connector.waitingRobots[vns.parentS] ~= nil then
-				vns.connector.waitingRobots[vns.parentS] = nil
-			end
-			break
-		end
-	end
-
 	-- for sight report, generate quadcopters
-	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "reportForDuty")) do
+	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "reportSight")) do
 		vns.connector.seenRobots[msgM.fromS] = DroneConnector.calcQuadR(msgM.fromS, vns.connector.seenRobots, msgM.dataT.mySight)
 	end
 end
@@ -60,6 +40,7 @@ function DroneConnector.create_droneconnector_node(vns)
 		vns.DroneConnector.step(vns)
 		vns.Connector.step(vns)
 		vns.Connector.recruitAll(vns)
+		vns.Connector.ackAll(vns)
 		
 		return false, true
 	end
