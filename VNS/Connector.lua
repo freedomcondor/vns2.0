@@ -135,12 +135,7 @@ function Connector.recruitAll(vns)
 		   (vns.parentR == nil or vns.parentR.idS ~= idS) and
 		   vns.brainS ~= idS then
 
-		   	   --if vns.robotTypeS == "drone" and robotR.idS == "pipuck1" then
-			   --else
-			
 			Connector.recruit(vns, robotR)
-
-			   --end
 		end
 	end
 end
@@ -203,15 +198,17 @@ function Connector.step(vns)
 
 	-- check new brain
 	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "newBrain")) do
-		if vns.idS == msgM.dataT.newBrainS then
-			vns.deleteParent(vns)
-		elseif vns.parentR ~= nil and msgM.fromS == vns.parentR.idS then
-			vns.brainS = msgM.dataT.newBrainS
-			for idS, robotR in pairs(vns.childrenRT) do
-				vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
-			end
-			for idS, robotR in pairs(vns.connector.waitingRobots) do
-				vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+		if vns.parentR ~= nil and msgM.fromS == vns.parentR.idS then
+			if vns.idS == msgM.dataT.newBrainS then
+				vns.deleteParent(vns)
+			else
+				vns.brainS = msgM.dataT.newBrainS
+				for idS, robotR in pairs(vns.childrenRT) do
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+				end
+				for idS, robotR in pairs(vns.connector.waitingRobots) do
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+				end
 			end
 		end
 	end

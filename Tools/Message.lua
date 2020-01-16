@@ -23,7 +23,7 @@ end
 
 function Message.arrange()
 	for iN, msgM in ipairs(Message.getTablesAT()) do
-		if msgM.toS == Message.myIDS() then
+		if msgM.toS == Message.myIDS() or msgM.toS == "ALLMSG" then
 			local i = #Message.list + 1
 			Message.list[i] = msgM
 			if Message.list[msgM.cmdS] == nil then
@@ -56,7 +56,7 @@ function Message.getAM(fromS, cmdS)
 	if cmdS == "ALLMSG" then searchList = Message.list
 		                else searchList = Message.list[cmdS] or {} end
 	for iN, msgM in ipairs(searchList) do
-		if msgM.toS == Message.myIDS() then
+		if msgM.toS == Message.myIDS() or msgM.toS == "ALLMSG" then
 		if fromS == "ALLMSG" or fromS == msgM.fromS then
 		if cmdS == "ALLMSG" or cmdS == msgM.cmdS then
 			i = i + 1

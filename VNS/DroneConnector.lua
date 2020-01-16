@@ -22,10 +22,9 @@ function DroneConnector.step(vns)
 		vns.Msg.send(idS, "reportSight", {mySight = vns.connector.seenRobots})
 	end
 
-	--[[
-	if vns.idS == "drone1" then
-		vns.Msg.send("drone0", "reportForDuty", {mySight = vns.connector.seenRobots})
-	end
+	---[[
+	-- broadcast my sight so other drones would see me
+	vns.Msg.send("ALLMSG", "reportSight", {mySight = vns.connector.seenRobots})
 	--]]
 
 	-- for sight report, generate quadcopters
@@ -44,14 +43,6 @@ function DroneConnector.create_droneconnector_node(vns)
 		
 		return false, true
 	end
-	--[[
-	{type = "sequence", children = {
-		vns.Connector.create_connector_node(vns),
-		function()
-			vns.Connector.recruitAll(vns)
-		end,
-	},}
-	--]]
 end
 
 function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
@@ -65,7 +56,8 @@ function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
 				             vector3(-robotR.positionV3):rotate(
 							 	robotR.orientationQ:inverse() * myRobotR.orientationQ
 							 ),
-				orientationQ = robotR.orientationQ:inverse() * myRobotR.orientationQ
+				orientationQ = robotR.orientationQ:inverse() * myRobotR.orientationQ,
+				robotTypeS = "drone",
 			}
 			break
 		end
