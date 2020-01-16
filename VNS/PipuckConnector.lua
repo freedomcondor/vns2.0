@@ -44,10 +44,6 @@ end
 function PipuckConnector.create_pipuckconnector_node(vns)
 	return function()
 		vns.PipuckConnector.step(vns)
-		vns.Connector.step(vns)
-		vns.Connector.recruitAll(vns)
-		vns.Connector.ackAll(vns)
-
 		return false, true
 	end
 end

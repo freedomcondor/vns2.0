@@ -33,18 +33,6 @@ function DroneConnector.step(vns)
 	end
 end
 
-function DroneConnector.create_droneconnector_node(vns)
-	return 
-	function()
-		vns.DroneConnector.step(vns)
-		vns.Connector.step(vns)
-		vns.Connector.recruitAll(vns)
-		vns.Connector.ackAll(vns)
-		
-		return false, true
-	end
-end
-
 function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
 	local quadR = nil
 	for _, robotR in pairs(yourVehiclesTR) do
@@ -63,6 +51,13 @@ function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
 		end
 	end
 	return quadR
+end
+
+function DroneConnector.create_droneconnector_node(vns)
+	return function()
+		vns.DroneConnector.step(vns)
+		return false, true
+	end
 end
 
 return DroneConnector

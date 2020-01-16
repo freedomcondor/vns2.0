@@ -34,6 +34,7 @@ function Connector.recruit(vns, robotR)
 		orientationQ = robotR.orientationQ,
 		fromTypeS = vns.robotTypeS,
 		brainS = vns.brainS,
+		scaleN = vns.scaleN,
 		withParent = withParent,
 	}) 
 
@@ -68,8 +69,9 @@ function Connector.deleteParent(vns)
 	vns.Msg.send(vns.parentR.idS, "dismiss")
 	vns.parentR = nil
 	vns.brainS = vns.idS
+	vns.scaleN = math.random()
 	for idS, robotR in pairs(vns.childrenRT) do
-		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 	end
 end
 
@@ -163,8 +165,9 @@ function Connector.ackAll(vns)
 				vns.addParent(vns, robotR)
 				vns.Msg.send(msgM.fromS, "ack")
 				vns.brainS = msgM.dataT.brainS
+				vns.scaleN = msgM.dataT.scaleN
 				for idS, robotR in pairs(vns.childrenRT) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
 				break
 			end
@@ -203,11 +206,12 @@ function Connector.step(vns)
 				vns.deleteParent(vns)
 			else
 				vns.brainS = msgM.dataT.newBrainS
+				vns.scaleN = msgM.dataT.scaleN
 				for idS, robotR in pairs(vns.childrenRT) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
 				for idS, robotR in pairs(vns.connector.waitingRobots) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
 			end
 		end

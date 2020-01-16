@@ -6,6 +6,8 @@ VNS.Connector = require("Connector")
 VNS.DroneConnector = require("DroneConnector")
 VNS.PipuckConnector = require("PipuckConnector")
 
+VNS.Rebellion = require("Rebellion")
+
 function VNS.create(myType)
 
 	-- a robot =  {
@@ -18,6 +20,7 @@ function VNS.create(myType)
 	local vns = {
 		idS = VNS.Msg.myIDS(),
 		brainS = VNS.Msg.myIDS(),
+		scaleN = math.random(),
 		robotTypeS = myType,
 
 		parentR = nil,
@@ -59,25 +62,25 @@ end
 
 
 function VNS.create_vns_node(vns)
-	local connector_node
+	local pre_connector_node
 	if vns.robotTypeS == "drone" then
-		connector_node = {
+		pre_connector_node = {
 			type = "sequence", children = {
 			VNS.DroneConnector.create_droneconnector_node(vns),
-			--VNS.DDConnector.create_ddconnector_node(vns),
 		}}
 	elseif vns.robotTypeS == "pipuck" then
-		connector_node = {
+		pre_connector_node = {
 			type = "sequence", children = {
 			VNS.PipuckConnector.create_pipuckconnector_node(vns),
-			--VNS.PPConnector.create_ppconnector_node(vns),
 		}}
 	end
 
 	return 
 
 	{type = "sequence", children = {
-		connector_node,
+		pre_connector_node,
+		vns.Connector.create_connector_node(vns),
+		vns.Rebellion.create_rebellion_node(vns),
 	},}
 
 end

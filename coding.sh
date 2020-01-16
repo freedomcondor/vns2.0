@@ -7,8 +7,10 @@ vim coding.sh -c "
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua
 
+	tabnew VNS/VNS.lua
 	tabnew VNS/Connector.lua
 	tabnew VNS/DroneConnector.lua
 	vsp VNS/PipuckConnector.lua
-	tabnew VNS/VNS.lua
+	
+	tabnew VNS/Rebellion.lua
 "

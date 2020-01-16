@@ -8,7 +8,7 @@ local BehaviorTree = require("luabt")
 DMSG = require("DebugMessage")
 DMSG.enable()
 
-require("Debugger")
+--require("Debugger")
 
 --local vns
 function init()
