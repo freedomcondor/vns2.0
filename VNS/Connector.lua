@@ -24,7 +24,6 @@ function Connector.prestep(vns)
 end
 
 function Connector.recruit(vns, robotR)
-	--local numberN = math.random()
 	local numberN = vns.scaleN
 	local withParent
 	if vns.parentR == nil then withParent = false
