@@ -15,9 +15,10 @@ function Rebellion.step(vns)
 		elseif vns.childrenRT[msgM.fromS] ~= nil then
 			-- tell other children we have a new brain
 			vns.brainS = msgM.dataT.brainS
+			vns.scaleN = msgM.dataT.scaleN
 			for idS, robotR in pairs(vns.childrenRT) do
 				if idS ~= msgM.fromS then
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
 			end
 
@@ -29,6 +30,7 @@ function Rebellion.step(vns)
 
 			-- set that child as parent
 			vns.parentR = vns.childrenRT[msgM.fromS]
+			vns.childrenRT[msgM.fromS] = nil
 		end
 	end
 end
@@ -37,6 +39,11 @@ function Rebellion.getRebel(vns)
 	if vns.parentR ~= nil then
 		for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "recruit")) do
 			if msgM.dataT.brainS ~= vns.brainS and msgM.dataT.scaleN > vns.scaleN then
+				local oldParentR = vns.parentR
+				vns.brainS = msgM.dataT.brainS
+				vns.scaleN = msgM.dataT.scaleN
+				Rebellion.rebel(vns)
+
 				local robotR = {
 					idS = msgM.fromS,
 					positionV3 = 
@@ -46,14 +53,12 @@ function Rebellion.getRebel(vns)
 				}
 				vns.addParent(vns, robotR)
 				vns.Msg.send(msgM.fromS, "ack")
-				vns.brainS = msgM.dataT.brainS
-				vns.scaleN = msgM.dataT.scaleN
 
 				for idS, robotR in pairs(vns.childrenRT) do
 					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
+				vns.addChild(vns, oldParentR)
 
-				Rebellion.rebel(vns)
 				break
 			end
 		end

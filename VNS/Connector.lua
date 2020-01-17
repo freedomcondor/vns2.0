@@ -24,7 +24,8 @@ function Connector.prestep(vns)
 end
 
 function Connector.recruit(vns, robotR)
-	local numberN = math.random()
+	--local numberN = math.random()
+	local numberN = vns.scaleN
 	local withParent
 	if vns.parentR == nil then withParent = false
 	                      else withParent = true end
@@ -71,6 +72,9 @@ function Connector.deleteParent(vns)
 	vns.brainS = vns.idS
 	vns.scaleN = math.random()
 	for idS, robotR in pairs(vns.childrenRT) do
+		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
+	end
+	for idS, robotR in pairs(vns.connector.waitingRobots) do
 		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 	end
 end
@@ -167,6 +171,9 @@ function Connector.ackAll(vns)
 				vns.brainS = msgM.dataT.brainS
 				vns.scaleN = msgM.dataT.scaleN
 				for idS, robotR in pairs(vns.childrenRT) do
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
+				end
+				for idS, robotR in pairs(vns.connector.waitingRobots) do
 					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 				end
 				break
