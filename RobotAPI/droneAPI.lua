@@ -26,8 +26,7 @@ function drone_set_speed(x, y, z, th)
 
 	robot.flight_system.set_targets(
 		robot.flight_system.position + vector3(x * time_step,y * time_step,z * time_step):rotate(q),
-		--rad + th
-		0
+		rad + th
 	)
 end
 
@@ -38,6 +37,8 @@ function drone_enable_cameras()
 end
 
 function drone_detect_tags()
+	local drone_offset = (quaternion(robot.flight_system.orientation.x, vector3(1,0,0)) *
+	                     quaternion(robot.flight_system.orientation.y, vector3(0,1,0))):inverse()
 	tags = {}
 	index = {}
 	for _, camera in ipairs(robot.cameras_system) do
@@ -47,9 +48,10 @@ function drone_detect_tags()
 				index[tag.id] = true
 				tags[#tags + 1] = {
 					idS = "pipuck" .. math.floor(tag.id),
-					positionV3 = camera.transform.position + 
-					             vector3(tag.position):rotate(camera.transform.orientation),
-					orientationQ = camera.transform.orientation * tag.orientation
+					positionV3 = (camera.transform.position + 
+					              vector3(tag.position):rotate(camera.transform.orientation)
+								 ):rotate(drone_offset),
+					orientationQ = drone_offset * camera.transform.orientation * tag.orientation
 				}
 			end
 		end

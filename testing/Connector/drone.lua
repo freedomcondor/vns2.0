@@ -22,6 +22,8 @@ end
 function step()
 	-- check height
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end
+	--drone_set_speed(0.1, 0.1, 0, 0.314)
+	drone_set_speed(1.0, 0, 0, 0)
 
 	process_time()
 	vns.prestep(vns)

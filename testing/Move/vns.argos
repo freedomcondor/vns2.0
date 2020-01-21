@@ -27,7 +27,7 @@
         <pipuck_rangefinders implementation="default" show_rays="true" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="pipuck.lua" />
+      <params script="testing/Move/pipuck.lua" />
     </lua_controller>
      <!-- Drone Controller -->
     <lua_controller id="drone">
@@ -43,7 +43,7 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="drone.lua" />
+      <params script="testing/Move/drone.lua" />
     </lua_controller>
   </controllers>
 
@@ -86,31 +86,13 @@
       <controller config="drone"/>
     </drone>
 
-    <drone id="drone1">
-      <body position="0,0,0" orientation="0,0,0"/>
-      <controller config="drone"/>
-    </drone>
-
-    <drone id="drone2">
-      <body position="3,0,0" orientation="0,0,0"/>
-      <controller config="drone"/>
-    </drone>
-
     <!-- add pi-puck robots -->
+	<!--
     <pipuck id="pipuck0">
       <body position="-3,0,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
-
-    <pipuck id="pipuck1">
-      <body position="-2.8,0,0" orientation="90,0,0"/>
-      <controller config="pipuck"/>
-    </pipuck>
-
-    <pipuck id="pipuck2">
-      <body position="-2.0,0,0" orientation="90,0,0"/>
-      <controller config="pipuck"/>
-    </pipuck>
+	-->
 
     <!--distribute>
       <position method="uniform" min="-4.5,-4.5,0" max="4.5,4.5,0" />
