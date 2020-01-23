@@ -15,9 +15,9 @@ end
 
 function drone_set_height(z)
 	local new_target = robot.flight_system.position
-	local rad = robot.flight_system.orientation:length()
+	local rad = robot.flight_system.orientation.z
 	new_target.z = 1.5
-	robot.flight_system.set_targets(vector3(0, 0, 1.5), rad)
+	robot.flight_system.set_targets(new_target, rad)
 end
 
 function drone_set_speed(x, y, z, th)
@@ -26,8 +26,16 @@ function drone_set_speed(x, y, z, th)
 
 	robot.flight_system.set_targets(
 		robot.flight_system.position + vector3(x * time_step,y * time_step,z * time_step):rotate(q),
-		rad + th
+		rad + th * time_step
 	)
+end
+
+function drone_move(transV3, rotateV3)
+	local x = transV3.x
+	local y = transV3.y
+	local w = rotateV3:length()
+	if rotateV3.z < 0 then w = -w end
+	drone_set_speed(x, y, 0, w)
 end
 
 function drone_enable_cameras()

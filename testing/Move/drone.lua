@@ -3,55 +3,84 @@ package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
 require("droneAPI")
+local VNS = require("VNS")
+local BehaviorTree = require("luabt")
 DMSG = require("DebugMessage")
 DMSG.enable()
 
---[[
+--require("Debugger")
+
+--local vns
+function init()
 	drone_set_height(1.5)
 	drone_enable_cameras()
-	if drone_check_height(1.5) == false then drone_set_height(1.5) end
---]]
 
--- trajectory = { time: number -> { position: vector3, yaw: number }}
-trajectory = {
-   [10] =  { vector3( 0,  0, 1.25),  0.0},
-   [20] =  { vector3( 1,  0, 1.25),  0.314},
-   --[[
-   [20] =  { vector3( 1,  1, 1.25),  0.0},
-   [30] =  { vector3(-1,  1, 1.25),  0.0},
-   [40] =  { vector3(-1, -1, 1.25),  0.0},
-   [50] =  { vector3( 1, -1, 1.25),  0.0},
-   --]]
-}
-
-function init()
-	--[[
-   for index, camera in ipairs(robot.cameras_system) do
-      camera.enable()
-   end
-   time = 1
-   --]]
+	vns = VNS.create("drone")
+	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
 function step()
-	drone_set_speed(1, 0, 0, 0.0314)
+	-- check height
+	if drone_check_height(1.5) == false then drone_set_height(1.5) end
+
+	process_time()
+	vns.prestep(vns)
+
+	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
+
+	bt()
+
+	for i, childR in pairs(vns.childrenRT) do
+		if childR.robotTypeS == "drone" then
+			childR.goalPoint = {positionV3 = vector3(0.8,0,0), orientationQ = quaternion()}
+		else
+			childR.goalPoint = {positionV3 = vector3(0.4,0,0), orientationQ = quaternion()}
+		end
+	end
+
+	if vns.parentR ~= nil then
+		drawArrow("green", 
+			tostring(vector3(0,0,0)),
+			tostring(vns.parentR.positionV3)
+		)
+	end
+
+	for i, child in pairs(vns.childrenRT) do
+		drawArrow("blue", 
+			tostring(vector3(0,0,0)),
+			tostring(child.positionV3)
+		)
+
+		drawArrow("red", 
+			tostring(child.positionV3),
+			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
+		)
+	end
 	--[[
-   for timestamp, path in pairs(trajectory) do
-      if time == timestamp then
-         robot.flight_system.set_targets(table.unpack(path))
-         --log(tostring(time) .. ": " .. tostring(robot.flight_system.position))
-      end
-   end
-   time = time + 1
-   if robot.debug then
-      robot.debug.draw("arrow(blue)(0,0,0)(0,0,-0.50)")
-   end
-   --]]
+	--]]
 end
 
 function reset()
-   init()
+	init()
 end
 
 function destroy()
+end
+
+-----------------------------------------------------------------------
+
+VNS.Msg.sendTable = function(table)
+	robot.wifi.tx_data(table)
+end
+
+VNS.Msg.getTablesAT = function(table)
+	return robot.wifi.rx_data
+end
+
+VNS.Msg.myIDS = function()
+	return robot.id
+end
+
+VNS.Driver.move = function(transV3, rotateV3)
+	drone_move(transV3, rotateV3)
 end

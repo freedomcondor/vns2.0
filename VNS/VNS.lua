@@ -8,6 +8,8 @@ VNS.PipuckConnector = require("PipuckConnector")
 
 VNS.Rebellion = require("Rebellion")
 
+VNS.Driver= require("Driver")
+
 function VNS.create(myType)
 
 	-- a robot =  {
@@ -81,6 +83,7 @@ function VNS.create_vns_node(vns)
 		pre_connector_node,
 		vns.Connector.create_connector_node(vns),
 		vns.Rebellion.create_rebellion_node(vns),
+		vns.Driver.create_driver_node(vns),
 	},}
 
 end

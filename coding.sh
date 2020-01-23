@@ -1,17 +1,18 @@
 vim coding.sh -c "
-	tabnew testing/Connector/vns.argos
-	tabnew testing/Connector/drone.lua
-	tabnew testing/Connector/pipuck.lua
+	tabnew testing/Move/vns.argos
+	tabnew testing/Move/drone.lua
+	tabnew testing/Move/pipuck.lua
 
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua
 
+	tabnew VNS/Driver.lua
 "
 <<COMMENT
-	tabnew testing/Move/vns.argos
-	tabnew testing/Move/drone.lua
-	tabnew testing/Move/pipuck.lua
+	tabnew testing/Connector/vns.argos
+	tabnew testing/Connector/drone.lua
+	tabnew testing/Connector/pipuck.lua
 
 	tabnew VNS/VNS.lua
 

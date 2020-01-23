@@ -86,13 +86,16 @@
       <controller config="drone"/>
     </drone>
 
+    <drone id="drone1">
+      <body position="-2,1,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
     <!-- add pi-puck robots -->
-	<!--
     <pipuck id="pipuck0">
       <body position="-3,0,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
-	-->
 
     <!--distribute>
       <position method="uniform" min="-4.5,-4.5,0" max="4.5,4.5,0" />
