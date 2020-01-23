@@ -24,19 +24,20 @@ function step()
 	-- check height
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end
 
+	vns.prestep(vns)
 	process_time()
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 
 	bt()
 
-	for i, childR in pairs(vns.childrenRT) do
-		if childR.robotTypeS == "drone" then
-			childR.goalPoint = {positionV3 = vector3(0.8,0,0), orientationQ = quaternion()}
-		else
-			childR.goalPoint = {positionV3 = vector3(0.4,0,0), orientationQ = quaternion()}
+	---[[
+	if vns.parentR ~= nil then
+		for i, childR in pairs(vns.childrenRT) do
+			vns.Assigner.assign(vns, i, vns.parentR.idS)
 		end
 	end
+	--]]
 
 	if vns.parentR ~= nil then
 		drawArrow("green", 

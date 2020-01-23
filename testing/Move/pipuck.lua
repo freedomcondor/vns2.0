@@ -5,21 +5,27 @@ package.path = package.path .. ";Tools/?.lua"
 require("pipuckAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
+
 DMSG = require("DebugMessage")
 DMSG.enable()
+--require("Debugger")
 
+--local vns
 function init()
+	linkPipuckInterface(VNS)
 	vns = VNS.create("pipuck")
-	vns.scaleN = 0
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
 function step()
-	vns.prestep(vns)
 	bt()
 
-	for i, child in pairs(vns.childrenRT) do
-		child.goalPoint = {positionV3 = vector3(0,0,0), orientationQ = quaternion(0, vector3(0,0,1))}
+	for i, childR in pairs(vns.childrenRT) do
+		if childR.robotTypeS == "drone" then
+			childR.goalPoint = {positionV3 = vector3(0.8,0,0), orientationQ = quaternion()}
+		else
+			childR.goalPoint = {positionV3 = vector3(0.4,0,0), orientationQ = quaternion()}
+		end
 	end
 
 	if vns.parentR ~= nil then
@@ -45,21 +51,3 @@ end
 
 function reset() end
 function destroy() end
-
------------------------------------------------------------------------
-
-VNS.Msg.sendTable = function(table)
-	robot.wifi.tx_data(table)
-end
-
-VNS.Msg.getTablesAT = function(table)
-	return robot.wifi.rx_data
-end
-
-VNS.Msg.myIDS = function()
-	return robot.id
-end
-
-VNS.Driver.move = function(transV3, rotateV3)
-	pipuck_move(transV3, rotateV3)
-end

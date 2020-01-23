@@ -5,13 +5,15 @@ package.path = package.path .. ";Tools/?.lua"
 require("droneAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
+
 DMSG = require("DebugMessage")
 DMSG.enable()
-
 --require("Debugger")
 
 --local vns
 function init()
+	linkDroneInterface(VNS)
+
 	drone_set_height(1.5)
 	drone_enable_cameras()
 
@@ -22,11 +24,8 @@ end
 function step()
 	-- check height
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end
-	--drone_set_speed(0.1, 0.1, 0, 0.314)
-	drone_set_speed(1.0, 0, 0, 0)
 
 	process_time()
-	vns.prestep(vns)
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 
@@ -59,18 +58,4 @@ function reset()
 end
 
 function destroy()
-end
-
------------------------------------------------------------------------
-
-VNS.Msg.sendTable = function(table)
-	robot.wifi.tx_data(table)
-end
-
-VNS.Msg.getTablesAT = function(table)
-	return robot.wifi.rx_data
-end
-
-VNS.Msg.myIDS = function()
-	return robot.id
 end

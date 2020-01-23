@@ -2,12 +2,13 @@ local VNS = {VNSCLASS = true}
 VNS.__index = VNS
 
 VNS.Msg = require("Message")
+
 VNS.Connector = require("Connector")
 VNS.DroneConnector = require("DroneConnector")
 VNS.PipuckConnector = require("PipuckConnector")
 
 VNS.Rebellion = require("Rebellion")
-
+VNS.Assigner = require("Assigner")
 VNS.Driver= require("Driver")
 
 function VNS.create(myType)
@@ -32,6 +33,7 @@ function VNS.create(myType)
 	setmetatable(vns, VNS)
 
 	VNS.Connector.create(vns)
+	VNS.Assigner.create(vns)
 	return vns
 end
 
@@ -41,9 +43,11 @@ function VNS.reset(vns)
 	vns.childrenRT = {}
 
 	vns.Connector.reset(vns)
+	vns.Assigner.reset(vns)
 end
 
 function VNS.prestep(vns)
+	if vns.parentR == nil then vns.Driver.move(vector3(), vector3()) end
 	vns.Msg.prestep(vns)
 	vns.Connector.prestep(vns)
 end
@@ -80,9 +84,11 @@ function VNS.create_vns_node(vns)
 	return 
 
 	{type = "sequence", children = {
+		--function() vns.prestep(vns) return false, true end,
 		pre_connector_node,
 		vns.Connector.create_connector_node(vns),
 		vns.Rebellion.create_rebellion_node(vns),
+		vns.Assigner.create_assigner_node(vns),
 		vns.Driver.create_driver_node(vns),
 	},}
 

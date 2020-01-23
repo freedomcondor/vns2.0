@@ -10,3 +10,18 @@ function drawArrow(color, begin, finish)
 		tostring(finish) .. ")"
 	)
 end
+
+------------------------------------------------------
+function linkCommonRobotInterface(VNS)
+	VNS.Msg.sendTable = function(table)
+		robot.wifi.tx_data(table)
+	end
+
+	VNS.Msg.getTablesAT = function(table)
+		return robot.wifi.rx_data
+	end
+
+	VNS.Msg.myIDS = function()
+		return robot.id
+	end
+end

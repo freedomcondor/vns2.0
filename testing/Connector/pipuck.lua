@@ -9,13 +9,15 @@ DMSG = require("DebugMessage")
 DMSG.enable()
 
 function init()
+	linkPipuckInterface(VNS)
+
 	vns = VNS.create("pipuck")
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
 function step()
-	vns.prestep(vns)
 	--pipuck_move(vector3(0.1, -0.5, 0), vector3(0,0,0))
+
 	bt()
 
 	if vns.parentR ~= nil then

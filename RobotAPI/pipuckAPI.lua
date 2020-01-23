@@ -26,3 +26,13 @@ function pipuck_move(transV3, rotateV3)
 
 	pipuck_set_velocity(left, right)
 end
+
+
+------------------------------------------------------
+function linkPipuckInterface(VNS)
+	VNS.Driver.move = function(transV3, rotateV3)
+		pipuck_move(transV3, rotateV3)
+	end
+	linkCommonRobotInterface(VNS)
+end
+

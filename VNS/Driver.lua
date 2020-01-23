@@ -7,13 +7,9 @@ function Driver.step(vns)
 		for _, msgM in pairs(vns.Msg.getAM(vns.parentR.idS, "drive")) do
 			-- a drive message data is:
 			--	{ transV3, rotateV3 }
-			DMSG("I receive = ", msgM.dataT.transV3)
-
 			local transV3 = msgM.dataT.transV3:rotate(vns.parentR.orientationQ)
 			local rotateV3 = msgM.dataT.rotateV3:rotate(vns.parentR.orientationQ)
 			Driver.move(transV3, rotateV3)
-
-			DMSG("I move = ",transV3)
 		end
 	end
 
@@ -39,10 +35,6 @@ function Driver.step(vns)
 			local angle, axis = rotateQ:toangleaxis()
 			if angle > math.pi then angle = angle - math.pi * 2 end
 			local goalPointRotateV3 = axis * angle
-
-
-			DMSG("positionV3 = ",robotR.positionV3)
-			DMSG("speedV3 = ",goalPointTransV3)
 
 			vns.Msg.send(robotR.idS, "drive",
 			{

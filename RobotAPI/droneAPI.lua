@@ -80,3 +80,12 @@ function drone_add_seenRobots(seenRobots, tags)
 		seenRobots[v.idS].robotTypeS = "pipuck"
 	end
 end
+
+------------------------------------------------------
+function linkDroneInterface(VNS)
+	VNS.Driver.move = function(transV3, rotateV3)
+		drone_move(transV3, rotateV3)
+	end
+	linkCommonRobotInterface(VNS)
+end
+

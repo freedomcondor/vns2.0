@@ -2,7 +2,7 @@ package.path = package.path .. ";RobotAPI/?.lua"
 package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
-require("droneAPI")
+require("pipuckAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
 
@@ -12,31 +12,22 @@ DMSG.enable()
 
 --local vns
 function init()
-	linkDroneInterface(VNS)
-	drone_set_height(1.5)
-	drone_enable_cameras()
-
-	vns = VNS.create("drone")
+	linkPipuckInterface(VNS)
+	vns = VNS.create("pipuck")
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
 function step()
-	-- check height
-	if drone_check_height(1.5) == false then drone_set_height(1.5) end
-
-	process_time()
-
-	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
-
+	vns.prestep(vns)
 	bt()
 
-	for i, childR in pairs(vns.childrenRT) do
-		if childR.robotTypeS == "drone" then
-			childR.goalPoint = {positionV3 = vector3(0.8,0,0), orientationQ = quaternion()}
-		else
-			childR.goalPoint = {positionV3 = vector3(0.4,0,0), orientationQ = quaternion()}
+	---[[
+	if vns.parentR ~= nil then
+		for i, childR in pairs(vns.childrenRT) do
+			vns.Assigner.assign(vns, i, vns.parentR.idS)
 		end
 	end
+	--]]
 
 	if vns.parentR ~= nil then
 		drawArrow("green", 
@@ -56,13 +47,8 @@ function step()
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
 	end
-	--[[
-	--]]
+
 end
 
-function reset()
-	init()
-end
-
-function destroy()
-end
+function reset() end
+function destroy() end
