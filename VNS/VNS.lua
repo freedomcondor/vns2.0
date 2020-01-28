@@ -9,6 +9,7 @@ VNS.PipuckConnector = require("PipuckConnector")
 
 VNS.Rebellion = require("Rebellion")
 VNS.Assigner = require("Assigner")
+VNS.Allocator = require("Allocator")
 VNS.Driver= require("Driver")
 
 function VNS.create(myType)
@@ -34,6 +35,7 @@ function VNS.create(myType)
 
 	VNS.Connector.create(vns)
 	VNS.Assigner.create(vns)
+	VNS.Allocator.create(vns)
 	return vns
 end
 
@@ -44,6 +46,7 @@ function VNS.reset(vns)
 
 	vns.Connector.reset(vns)
 	vns.Assigner.reset(vns)
+	vns.Allocator.reset(vns)
 end
 
 function VNS.prestep(vns)
@@ -66,6 +69,9 @@ function VNS.deleteParent(vns)
 	vns.Connector.deleteParent(vns)
 end
 
+function VNS.setGene(vns, morph)
+	vns.Allocator.setGene(vns, morph)
+end
 
 function VNS.create_vns_node(vns)
 	local pre_connector_node
@@ -89,6 +95,7 @@ function VNS.create_vns_node(vns)
 		vns.Connector.create_connector_node(vns),
 		vns.Rebellion.create_rebellion_node(vns),
 		vns.Assigner.create_assigner_node(vns),
+		vns.Allocator.create_allocator_node(vns),
 		vns.Driver.create_driver_node(vns),
 	},}
 
