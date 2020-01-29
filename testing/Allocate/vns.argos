@@ -5,7 +5,7 @@
   <!-- * General configuration * -->
   <!-- ************************* -->
   <framework>
-    <system threads="0" />
+    <system threads="0"/>
     <experiment length="0" ticks_per_second="5" random_seed="12345" />
   </framework>
   
@@ -39,7 +39,7 @@
         <wifi implementation="default" />
       </actuators>
       <sensors>
-        <drone_cameras_system implementation="default" show_frustum="true" show_tag_rays="true" />
+        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" />
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
@@ -91,6 +91,11 @@
       <controller config="drone"/>
     </drone>
 
+    <drone id="drone2">
+      <body position="-2,1,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
     <!-- add pi-puck robots -->
     <pipuck id="pipuck0">
       <body position="-3,0,0" orientation="90,0,0"/>
@@ -99,6 +104,11 @@
 
     <pipuck id="pipuck1">
       <body position="-1,0,0" orientation="90,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
+
+    <pipuck id="pipuck2">
+      <body position="-1,1,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 

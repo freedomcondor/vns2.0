@@ -64,9 +64,11 @@ end
 
 function VNS.addParent(vns, robotR)
 	vns.Connector.addParent(vns, robotR)
+	vns.Allocator.addParent(vns)
 end
 function VNS.deleteParent(vns)
 	vns.Connector.deleteParent(vns)
+	vns.Allocator.deleteParent(vns)
 end
 
 function VNS.setGene(vns, morph)

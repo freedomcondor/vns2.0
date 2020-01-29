@@ -15,21 +15,27 @@ DMSG.enable()
 		positionV3 = vector3(),
 		orientationQ = quaternion(),
 		children = {
-			{	robotType = "vehicle",
-				positionV3 = vector3(dis, dis, 0),
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(dis, 0, 0),
 				orientationQ = quaternion(),
 			},
-			{	robotType = "quadcopter",
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(-dis, 0, 0),
+				orientationQ = quaternion(),
+			},
+			{	robotTypeS = "drone",
 				positionV3 = vector3(-dis*2, 0, 0),
 				orientationQ = quaternion(),
 				children = {
-					{	robotType = "vehicle",
-						positionV3 = vector3(-dis, -dis, 0),
+					{	robotTypeS = "pipuck",
+						positionV3 = vector3(-dis, 0, 0),
 						orientationQ = quaternion(),
-					},
-					{	robotType = "vehicle",
-						positionV3 = vector3(-dis, dis, 0),
-						orientationQ = quaternion(),
+						children = {
+							{	robotTypeS = "drone",
+								positionV3 = vector3(-dis, 0, 0),
+								orientationQ = quaternion(),
+							},
+						},
 					},
 				},
 			},
@@ -58,12 +64,14 @@ function step()
 
 	bt()
 
+	---[[
 	if vns.parentR ~= nil then
 		drawArrow("green", 
 			tostring(vector3(0,0,0)),
 			tostring(vns.parentR.positionV3)
 		)
 	end
+	--]]
 
 	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
@@ -71,10 +79,12 @@ function step()
 			tostring(child.positionV3)
 		)
 
+		---[[
 		drawArrow("red", 
 			tostring(child.positionV3),
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
+		--]]
 	end
 	--[[
 	--]]

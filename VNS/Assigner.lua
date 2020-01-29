@@ -5,7 +5,7 @@ local Assigner = {}
 --[[
 --	related data
 --	vns.assigner.targetS
---	vns.childrenRT.xxid.assignTarget
+--	vns.childrenRT.xxid.assignTargetS
 --]]
 
 function Assigner.create(vns)
