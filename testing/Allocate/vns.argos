@@ -39,7 +39,7 @@
         <wifi implementation="default" />
       </actuators>
       <sensors>
-        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" />
+        <drone_cameras_system implementation="default" show_frustum="true" show_tag_rays="false" />
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>

@@ -32,7 +32,7 @@ DMSG.enable()
 						orientationQ = quaternion(),
 						children = {
 							{	robotTypeS = "drone",
-								positionV3 = vector3(-dis, 0, 0),
+								positionV3 = vector3(0, 0, 0),
 								orientationQ = quaternion(),
 							},
 						},
@@ -49,6 +49,7 @@ function init()
 	drone_enable_cameras()
 
 	vns = VNS.create("drone")
+	vns.setGene(vns, structure)
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
@@ -58,7 +59,6 @@ function step()
 
 	vns.prestep(vns)
 	process_time()
-	vns.setGene(vns, structure)
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 

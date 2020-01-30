@@ -70,6 +70,9 @@ function Connector.deleteParent(vns)
 	vns.parentR = nil
 	vns.brainS = vns.idS
 	vns.scaleN = math.random()
+	if vns.robotTypeS == "pipuck" then
+		vns.scaleN = -vns.scaleN
+	end
 	for idS, robotR in pairs(vns.childrenRT) do
 		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
 	end

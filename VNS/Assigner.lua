@@ -52,6 +52,7 @@ function Assigner.step(vns)
 				robotTypeS = msgM.dataT.fromTypeS,
 			}
 			vns.addParent(vns, robotR)
+			vns.assigner.targetS = nil
 		end
 		break
 	end

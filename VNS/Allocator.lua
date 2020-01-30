@@ -54,7 +54,10 @@ function Need.__sub(A, B)
 	return C
 end
 
-function Need.__equal(A, B)
+function Need.__eq(A, B)
+	if A == nil and B ~= nil then return false end
+	if A ~= nil and B == nil then return false end
+	if A == nil and B == nil then return true end
 	for i, v in pairs(A) do
 		if A[i] ~= B[i] then return false end
 	end
@@ -81,10 +84,6 @@ end
 function Allocator.addParent(vns)
 	vns.Allocator.setMorphology(vns, nil)
 	vns.allocator.lastRequire = Need:new()
-	for idS, robotR in pairs(vns.childrenRT) do
-		robotR.requiring = nil
-		robotR.allocated = nil
-	end
 end
 
 function Allocator.deleteParent(vns)
@@ -139,7 +138,13 @@ function Allocator.step(vns)
 
 	-- what I still need
 	local irequire = ineed - ihave
-	if irequire ~= vns.allocator.lastRequire then
+	DMSG("irequire")
+	DMSG(irequire)
+	DMSG("vns.allocator.lastRequire")
+	DMSG(vns.allocator.lastRequire)
+	DMSG(irequire == vns.allocator.lastRequire)
+	if irequire == vns.allocator.lastRequire then
+	else
 		if vns.parentR ~= nil then
 			vns.Msg.send(vns.parentR.idS, "need", {need = irequire})
 			vns.allocator.lastRequire = irequire
@@ -221,7 +226,7 @@ function Allocator.allocate(vns, allocating_type, irequire)
 		end
 	end
 
-	DMSG("costMatrix")
+	DMSG(robot.id, "costMatrix")
 	DMSG(costMatrix)
 
 	local index = {}
@@ -246,8 +251,26 @@ function Allocator.allocate(vns, allocating_type, irequire)
 		result = arranger()
 	end
 
+	DMSG(robot.id, "miniresult")
+	DMSG(miniresult)
+
 	for i = 1, #childrenList do
-		if positionList[miniresult[i]].idS == nil then
+		DMSG(robot.id, "i = ", i)
+		DMSG(robot.id, "positionList")
+
+		if miniresult == nil then
+			if vns.parentR ~= nil then
+				vns.Assigner.assign(vns, childrenList[i].idS, vns.parentR.idS)
+				vns.Msg.send(childrenList[i].idS, "branch", {target = nil})
+			else
+				vns.Msg.send(childrenList[i].idS, "branch", {target = nil})
+				childrenList[i].allocated = nil
+				childrenList[i].goalPoint = {
+					positionV3 = vector3(),
+					orientationQ = quaternion(), 
+				}
+			end
+		elseif positionList[miniresult[i]].idS == nil then
 			vns.Msg.send(childrenList[i].idS, "branch", {target = positionList[miniresult[i]]})
 			childrenList[i].allocated = positionList[miniresult[i]]
 			childrenList[i].goalPoint = {
