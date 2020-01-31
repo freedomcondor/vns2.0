@@ -16,7 +16,7 @@ end
 function pipuck_move(transV3, rotateV3)
 	local left = transV3.x
 	local right = transV3.x
-	local turnrate = 1.0
+	local turnrate = 1.5
 
 	--left  = left  - transV3.y/transV3.x * turnrate
 	--right = right + transV3.y/transV3.x * turnrate

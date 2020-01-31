@@ -18,7 +18,7 @@ function Driver.step(vns)
 		if robotR.trajectory ~= nil then
 			-- TODO trajectory
 		elseif robotR.goalPoint ~= nil then
-			local speed = 0.3
+			local speed = 0.1
 			local threshold = 0.15
 
 			local goalPointTransV3, goalPointRotateV3

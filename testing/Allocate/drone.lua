@@ -11,6 +11,7 @@ DMSG.enable()
 --require("Debugger")
 
 	local dis = 0.5
+	--[[
 	local structure = {
 		positionV3 = vector3(),
 		orientationQ = quaternion(),
@@ -41,6 +42,103 @@ DMSG.enable()
 			},
 		},
 	}
+	--]]
+	local structure = {
+		positionV3 = vector3(),
+		orientationQ = quaternion(),
+		children = {
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(dis, dis, 0),
+				orientationQ = quaternion(0, vector3(0,0,1)),
+			},
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(dis, -dis, 0),
+				orientationQ = quaternion(0, vector3(0,0,1)),
+			},
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(-dis, -dis, 0),
+				orientationQ = quaternion(0, vector3(0,0,1)),
+			},
+			{	robotTypeS = "pipuck",
+				positionV3 = vector3(-dis, dis, 0),
+				orientationQ = quaternion(0, vector3(0,0,1)),
+			},
+			{	robotTypeS = "drone",
+				positionV3 = vector3(-dis*2, 0, 0),
+				orientationQ = quaternion(0, vector3(0,0,1)),
+				children = {
+					{	robotTypeS = "pipuck",
+						positionV3 = vector3(-dis, -dis, 0),
+						orientationQ = quaternion(0, vector3(0,0,1)),
+					},
+					{	robotTypeS = "pipuck",
+						positionV3 = vector3(-dis, dis, 0),
+						orientationQ = quaternion(0, vector3(0,0,1)),
+					},
+					{	robotTypeS = "drone",
+						positionV3 = vector3(-dis*2, 0, 0),
+						orientationQ = quaternion(0, vector3(0,0,1)),
+				--[[
+						children = {
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, -dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+							{	robotTypeS = "drone",
+								positionV3 = vector3(-dis*2, 0, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+								children = {
+									{	robotTypeS = "pipuck",
+										positionV3 = vector3(-dis, -dis, 0),
+										orientationQ = quaternion(0, vector3(0,0,1)),
+									},
+									{	robotTypeS = "pipuck",
+										positionV3 = vector3(-dis, dis, 0),
+										orientationQ = quaternion(0, vector3(0,0,1)),
+									},
+								},
+							},
+						},
+				--]]
+					},
+					{	robotTypeS = "drone",
+						positionV3 = vector3(0, -dis*2, 0),
+						orientationQ = quaternion(math.pi/2, vector3(0,0,1)),
+						children = {
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, -dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+						},
+					},
+					{	robotTypeS = "drone",
+						positionV3 = vector3(0, dis*2, 0),
+						orientationQ = quaternion(-math.pi/2, vector3(0,0,1)),
+						children = {
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, -dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+							{	robotTypeS = "pipuck",
+								positionV3 = vector3(-dis, dis, 0),
+								orientationQ = quaternion(0, vector3(0,0,1)),
+							},
+						},
+
+					},
+
+				},
+			},
+		},
+	}
 
 --local vns
 function init()
@@ -64,7 +162,7 @@ function step()
 
 	bt()
 
-	---[[
+	--[[
 	if vns.parentR ~= nil then
 		drawArrow("green", 
 			tostring(vector3(0,0,0)),
@@ -79,7 +177,7 @@ function step()
 			tostring(child.positionV3)
 		)
 
-		---[[
+		--[[
 		drawArrow("red", 
 			tostring(child.positionV3),
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
