@@ -14,7 +14,7 @@ DMSG.enable()
 function init()
 	linkPipuckInterface(VNS)
 	vns = VNS.create("pipuck")
-	vns.scaleN = -math.random()
+	vns.setGene(vns, {robotTypeS = "drone"})
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
 end
 
