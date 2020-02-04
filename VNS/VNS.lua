@@ -143,7 +143,7 @@ function VNS.create_vns_node(vns)
 		vns.Connector.create_connector_node(vns),
 		vns.ScaleManager.create_scalemanager_node(vns),
 		vns.Assigner.create_assigner_node(vns),
-		vns.Allocator.create_allocator_node(vns),
+		--vns.Allocator.create_allocator_node(vns),
 		vns.Driver.create_driver_node(vns),
 	},}
 

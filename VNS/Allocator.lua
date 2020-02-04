@@ -14,84 +14,23 @@ local Allocator = {}
 --	vns.childrenRT[xxid].requiring
 --]]
 
-------------------------------------------------
-local Need = {}
-Need.__index = Need
-
-function Need:new(table)
-	local instance = {}
-	setmetatable(instance, self)
-	if table == nil then return instance end
-	for i, v in pairs(table) do
-		instance[i] = v
-	end
-	return instance
-end
-
-function Need.__add(A, B)
-	local C = Need:new(A)
-	if B == nil then return C end
-	for i, v in pairs(B) do
-		if C[i] == nil then 
-			C[i] = v
-		else
-			C[i] = C[i] + v
-		end
-	end
-	return C
-end
-
-function Need.__sub(A, B)
-	local C = Need:new(A)
-	if B == nil then return C end
-	for i, v in pairs(B) do
-		if C[i] == nil then 
-			C[i] = -v
-		else
-			C[i] = C[i] - v
-		end
-	end
-	return C
-end
-
-function Need.__eq(A, B)
-	if A == nil and B ~= nil then return false end
-	if A ~= nil and B == nil then return false end
-	if A == nil and B == nil then return true end
-	for i, v in pairs(A) do
-		if A[i] ~= B[i] then return false end
-	end
-	for i, v in pairs(B) do
-		if A[i] ~= B[i] then return false end
-	end
-	return true
-end
-------------------------------------------------
-
 function Allocator.create(vns)
 	vns.allocator = {}
-	vns.allocator.lastRequire = Need:new()
 end
 
 function Allocator.reset(vns)
-	vns.allocator.lastRequire = Need:new()
-	for idS, robotR in pairs(vns.childrenRT) do
-		robotR.requiring = nil
-		robotR.allocated = nil
-	end
 end
 
 function Allocator.addParent(vns)
 	vns.Allocator.setMorphology(vns, nil)
-	vns.allocator.lastRequire = Need:new()
 end
 
 function Allocator.deleteParent(vns)
 	vns.Allocator.setMorphology(vns, vns.allocator.gene)
-	vns.allocator.lastRequire = Need:new()
 end
 
 function Allocator.setGene(vns, morph)
+	Allocator.calcMorphScale(vns, morph)
 	vns.allocator.gene = morph
 	vns.Allocator.setMorphology(vns, morph)
 end
@@ -105,36 +44,6 @@ function Allocator.step(vns)
 	if vns.parentR ~= nil then for _, msgM in ipairs(vns.Msg.getAM(vns.parentR.idS, "branch")) do
 		Allocator.setMorphology(vns, msgM.dataT.target)
 	end end
-
-	-- receive need
-	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "need")) do
-		local fromR
-		if vns.parentR ~= nil and vns.parentR.idS == msgM.fromS then fromR = vns.parentR end
-		if vns.childrenRT[msgM.fromS] ~= nil then fromR = vns.childrenRT[msgM.fromS] end
-		if fromR ~= nil then fromR.requiring = Need:new(msgM.dataT.need) end
-	end
-
-	-- what I need on my end
-	local ineed = Need:new()
-	if vns.allocator.target ~= nil and vns.allocator.target.children ~= nil then
-	for idS, robotR in pairs(vns.allocator.target.children) do
-		if ineed[robotR.robotTypeS] == nil then ineed[robotR.robotTypeS] = 0 end
-		ineed[robotR.robotTypeS] = ineed[robotR.robotTypeS] + 1
-	end end
-
-	-- what I need from my children
-	for idS, robotR in pairs(vns.childrenRT) do
-		if robotR.requiring ~= nil then
-			ineed = ineed + robotR.requiring
-		end
-	end
-
-	-- what I have
-	local ihave = Need:new()
-	for idS, robotR in pairs(vns.childrenRT) do
-		if ihave[robotR.robotTypeS] == nil then ihave[robotR.robotTypeS] = 0 end
-		ihave[robotR.robotTypeS] = ihave[robotR.robotTypeS] + 1
-	end
 
 	-- what I still need
 	local irequire = ineed - ihave
@@ -284,6 +193,42 @@ function Allocator.allocate(vns, allocating_type, irequire)
 		else
 			vns.Assigner.assign(vns, childrenList[i].idS, positionList[miniresult[i]].idS)
 			vns.Msg.send(childrenList[i].idS, "branch", {target = nil})
+		end
+	end
+end
+
+function Allocator.calcMorphScale(vns, morph)
+	Allocator.calcMorphChildrenScale(vns, morph)
+	Allocator.calcMorphParentScale(vns, morph)
+end
+
+function Allocator.calcMorphChildrenScale(vns, morph)
+	local sum = vns.ScaleManager.Scale:new()
+	if morph.children ~= nil then
+		for i, branch in ipairs(morph.children) do
+			sum = sum + Allocator.calcMorphChildrenScale(vns, branch)
+		end
+	end
+	if sum[morph.robotTypeS] == nil then
+		sum[morph.robotTypeS] = 1
+	else
+		sum[morph.robotTypeS] = sum[morph.robotTypeS] + 1
+	end
+	morph.scale = sum
+	return sum
+end
+
+function Allocator.calcMorphParentScale(vns, morph)
+	if morph.parentScale == nil then
+		morph.parentScale = vns.ScaleManager.Scale:new()
+	end
+	local sum = morph.parentScale + morph.scale
+	if morph.children ~= nil then
+		for i, branch in ipairs(morph.children) do
+			branch.parentScale = sum - branch.scale
+		end
+		for i, branch in ipairs(morph.children) do
+			Allocator.calcMorphParentScale(vns, branch)
 		end
 	end
 end

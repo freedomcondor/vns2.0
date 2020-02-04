@@ -44,6 +44,7 @@ DMSG.enable()
 	}
 	--]]
 	local structure = {
+		robotTypeS = "drone",
 		positionV3 = vector3(),
 		orientationQ = quaternion(),
 		children = {
