@@ -8,15 +8,19 @@ local Allocator = {}
 --[[
 --	related data
 --	vns.allocator.target
+--	vns.allocator.robotAllocated
 --	vns.allocator.gene
 --	vns.childrenRT[xxid].allocated
 --]]
 
 function Allocator.create(vns)
 	vns.allocator = {}
+	vns.allocator.robotAllocated = {}
 end
 
 function Allocator.reset(vns)
+	vns.allocator = {}
+	vns.allocator.robotAllocated = {}
 end
 
 function Allocator.addParent(vns)
@@ -51,14 +55,13 @@ function Allocator.step(vns)
 		end
 		if target.children ~= nil then for i, branch in ipairs(target.children) do
 			--branch.requiring = branch.scale
-			branch.requiring = vns.ScaleManager.Scale:new()
-			branch.requiring[branch.robotTypeS] = 1
-		end end
-		for idS, robotR in pairs(vns.childrenRT) do
-			if robotR.allocated ~= nil then
-				robotR.allocated.requiring = robotR.allocated.scale - robotR.scale
+			if branch.allocated == nil then
+				branch.requiring = vns.ScaleManager.Scale:new()
+				branch.requiring[branch.robotTypeS] = 1
+			else
+				branch.requiring = branch.scale - branch.allocated.scale
 			end
-		end
+		end end
 	end
 
 	Allocator.allocate(vns, "drone", irequire)
@@ -74,10 +77,10 @@ function Allocator.allocate(vns, allocating_type)
 		if robotR.robotTypeS == allocating_type then
 			i = i + 1
 			childrenList[i] = robotR
-			if robotR.allocated ~= nil and 
-			   robotR.allocated.requiring[allocating_type] ~= nil and
-			   robotR.allocated.requiring[allocating_type] < 0 then
-				for j = 1, -robotR.allocated.requiring[allocating_type] do
+			if vns.allocator.robotAllocated[idS] ~= nil and 
+			   vns.allocator.robotAllocated[idS].requiring[allocating_type] ~= nil and
+			   vns.allocator.robotAllocated[idS].requiring[allocating_type] < 0 then
+				for j = 1, -vns.allocator.robotAllocated[idS].requiring[allocating_type] do
 					i = i + 1
 					childrenList[i] = robotR
 				end
@@ -93,22 +96,24 @@ function Allocator.allocate(vns, allocating_type)
 	local i = 0
 	if vns.allocator.target ~= nil and vns.allocator.target.children ~= nil then
 		for j, branchR in pairs(vns.allocator.target.children) do
-			if branchR.robotTypeS == allocating_type then
+			if branchR.allocated ~= nil and branchR.robotTypeS == allocating_type then
 				i = i + 1
 				positionList[i] = branchR
 			end
 			if branchR.requiring[allocating_type] ~= nil and
 			   branchR.requiring[allocating_type] > 0 then
-				for k = 1, branchR.requiring[allocating_type] do
-					i = i + 1
+				i = i + 1
+				if branchR.robotTypeS == allocating_type then
 					positionList[i] = branchR
+				else
+					positionList[i] = branchR.allocated
 				end
 			end
 		end
 	end
 
 	local parentPosition
-	if vns.parentr ~= nil then
+	if vns.parentR ~= nil then
 		parentPosition = vns.parentR
 	else
 		parentPosition = {positionV3 = vector3(), orientationQ = quaternion()}
@@ -176,12 +181,15 @@ function Allocator.allocate(vns, allocating_type)
 	end
 	for i = 1, #positionList do
 		positionList[i].allocated = nil
-		positionList[i].allocatedcost = 0
+		positionList[i].allocatedcost = nil
+	end
+	for i = 1, #childrenList do
+		childrenList[i].allocated = nil
 	end
 
 	DMSG(robot.id, allocating_type)
 	DMSG("childrenList")
-	DMSG(childrenList, 1, "allocated")
+	DMSG(childrenList, 1, "lastSendBranch")
 	DMSG("positionList")
 	DMSG(positionList, 1, "allocated")
 
@@ -190,8 +198,12 @@ function Allocator.allocate(vns, allocating_type)
 
 	for i = 1, #childrenList do
 		if positionList[ miniresult[i] ].idS == nil then
-			vns.Msg.send(childrenList[i].idS, "branch", {target = positionList[ miniresult[i] ]})
-			childrenList[i].allocated = positionList[ miniresult[i] ]
+			if childrenList[i].lastSendBranch ~= positionList[ miniresult[i] ] then
+				vns.Msg.send(childrenList[i].idS, "branch", {target = positionList[ miniresult[i] ]})
+				childrenList[i].lastSendBranch = positionList[ miniresult[i] ]
+			end
+			vns.allocator.robotAllocated[childrenList[i].idS] = positionList[ miniresult[i] ]
+			positionList[ miniresult[i] ].allocated = childrenList[i]
 			childrenList[i].goalPoint = {
 				positionV3 = positionList[ miniresult[i] ].positionV3,
 				orientationQ = positionList[ miniresult[i] ].orientationQ,
