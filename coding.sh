@@ -1,9 +1,9 @@
 vim coding.sh -c "
 	tabnew VNS/VNS.lua
 
-	tabnew testing/Allocate/vns.argos
-	tabnew testing/Allocate/drone.lua
-	tabnew testing/Allocate/pipuck.lua
+	tabnew testing/ScaleManager/vns.argos
+	tabnew testing/ScaleManager/drone.lua
+	tabnew testing/ScaleManager/pipuck.lua
 
 	tabnew VNS/Driver.lua
 	vsp VNS/Connector.lua
@@ -11,6 +11,7 @@ vim coding.sh -c "
 	tabnew VNS/Assigner.lua
 
 	tabnew VNS/Allocator.lua
+	tabnew VNS/ScaleManager.lua
 "
 <<COMMENT
 	tabnew testing/Move/vns.argos
@@ -24,6 +25,10 @@ vim coding.sh -c "
 	tabnew testing/Assign/vns.argos
 	tabnew testing/Assign/drone.lua
 	tabnew testing/Assign/pipuck.lua
+
+	tabnew testing/Allocate/vns.argos
+	tabnew testing/Allocate/drone.lua
+	tabnew testing/Allocate/pipuck.lua
 
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua

@@ -7,10 +7,35 @@ VNS.Connector = require("Connector")
 VNS.DroneConnector = require("DroneConnector")
 VNS.PipuckConnector = require("PipuckConnector")
 
-VNS.Rebellion = require("Rebellion")
 VNS.Assigner = require("Assigner")
 VNS.Allocator = require("Allocator")
+VNS.ScaleManager = require("ScaleManager")
 VNS.Driver= require("Driver")
+
+VNS.Modules = {
+	VNS.DroneConnector,
+	VNS.PipuckConnector,
+	VNS.Connector,
+
+	VNS.ScaleManager,
+
+	VNS.Assigner,
+	VNS.Allocator,
+	VNS.Driver,
+}
+
+--[[
+--	vns = {
+--		idS
+--		brainS
+--		robotTypeS
+--		scale
+--		
+--		parentR
+--		childrenRT
+--
+--	}
+--]]
 
 function VNS.create(myType)
 
@@ -23,19 +48,17 @@ function VNS.create(myType)
 
 	local vns = {
 		idS = VNS.Msg.myIDS(),
-		brainS = VNS.Msg.myIDS(),
-		scaleN = math.random(),
 		robotTypeS = myType,
-
-		parentR = nil,
-		childrenRT = {},
 	}
-
 	setmetatable(vns, VNS)
 
-	VNS.Connector.create(vns)
-	VNS.Assigner.create(vns)
-	VNS.Allocator.create(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.create) == "function" then
+			module.create(vns)
+		end
+	end
+
+	VNS.reset(vns)
 	return vns
 end
 
@@ -44,35 +67,59 @@ function VNS.reset(vns)
 	vns.brainS = VNS.Msg.myIDS()
 	vns.childrenRT = {}
 
-	vns.Connector.reset(vns)
-	vns.Assigner.reset(vns)
-	vns.Allocator.reset(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.reset) == "function" then
+			module.reset(vns)
+		end
+	end
 end
 
 function VNS.prestep(vns)
 	if vns.parentR == nil then vns.Driver.move(vector3(), vector3()) end
 	vns.Msg.prestep(vns)
-	vns.Connector.prestep(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.prestep) == "function" then
+			module.prestep(vns)
+		end
+	end
 end
 
 function VNS.addChild(vns, robotR)
-	vns.Connector.addChild(vns, robotR)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.addChild) == "function" then
+			module.addChild(vns, robotR)
+		end
+	end
 end
 function VNS.deleteChild(vns, idS)
-	vns.Connector.deleteChild(vns, idS)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.deleteChild) == "function" then
+			module.deleteChild(vns, idS)
+		end
+	end
 end
 
 function VNS.addParent(vns, robotR)
-	vns.Connector.addParent(vns, robotR)
-	vns.Allocator.addParent(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.addParent) == "function" then
+			module.addParent(vns, robotR)
+		end
+	end
 end
 function VNS.deleteParent(vns)
-	vns.Connector.deleteParent(vns)
-	vns.Allocator.deleteParent(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.deleteParent) == "function" then
+			module.deleteParent(vns)
+		end
+	end
 end
 
 function VNS.setGene(vns, morph)
-	vns.Allocator.setGene(vns, morph)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.setGene) == "function" then
+			module.setGene(vns, morph)
+		end
+	end
 end
 
 function VNS.create_vns_node(vns)
@@ -92,10 +139,9 @@ function VNS.create_vns_node(vns)
 	return 
 
 	{type = "sequence", children = {
-		--function() vns.prestep(vns) return false, true end,
 		pre_connector_node,
 		vns.Connector.create_connector_node(vns),
-		vns.Rebellion.create_rebellion_node(vns),
+		vns.ScaleManager.create_scalemanager_node(vns),
 		vns.Assigner.create_assigner_node(vns),
 		vns.Allocator.create_allocator_node(vns),
 		vns.Driver.create_driver_node(vns),

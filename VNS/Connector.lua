@@ -16,26 +16,26 @@ end
 function Connector.reset(vns)
 	vns.connector.waitingRobots = {}
 	vns.connector.seenRobots = {}
+	vns.connector.brainSwitchCount = 0
 end
 
 function Connector.prestep(vns)
-	vns.lastBrainS = vns.brainS
 	vns.connector.seenRobots = {}
 end
 
 function Connector.recruit(vns, robotR)
-	local numberN = vns.scaleN
-	local withParent
-	if vns.parentR == nil then withParent = false
-	                      else withParent = true end
+	local numberN = math.random()
+
+	local scaleN = 0
+	if vns.scale ~= nil then scaleN = vns.scale:totalNumber() end
+
 	vns.Msg.send(robotR.idS, "recruit", {	
-		numberN = numberN,
 		positionV3 = robotR.positionV3,
 		orientationQ = robotR.orientationQ,
 		fromTypeS = vns.robotTypeS,
 		brainS = vns.brainS,
-		scaleN = vns.scaleN,
-		withParent = withParent,
+		scale = vns.scale,
+		numberN = numberN,
 	}) 
 
 	vns.connector.waitingRobots[robotR.idS] = {
@@ -68,16 +68,27 @@ function Connector.deleteParent(vns)
 	if vns.parentR == nil then return end
 	vns.Msg.send(vns.parentR.idS, "dismiss")
 	vns.parentR = nil
-	vns.brainS = vns.idS
-	vns.scaleN = math.random()
-	if vns.robotTypeS == "pipuck" then
-		vns.scaleN = -vns.scaleN
-	end
+	Connector.changeBrain(vns, vns.idS)
+end
+
+function Connector.changeBrain(vns, newBrainS)
+	if vns.brainS == newBrainS then return end
+
+	vns.brainS = newBrainS
+
+	local max = 0
 	for idS, robotR in pairs(vns.childrenRT) do
-		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
+		if robotR.scale:totalNumber() > max then
+			max = robotR.scale:totalNumber()
+		end
+	end
+	vns.connector.brainSwitchCount = max + 2
+
+	for idS, robotR in pairs(vns.childrenRT) do
+		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
 	end
 	for idS, robotR in pairs(vns.connector.waitingRobots) do
-		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
+		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
 	end
 end
 
@@ -125,6 +136,11 @@ function Connector.update(vns)
 	end
 end
 
+function Connector.brainSwitchCount(vns)
+	if vns.connector.brainSwitchCount > 0 then
+		vns.connector.brainSwitchCount = vns.connector.brainSwitchCount - 1
+	end
+end
 
 function Connector.waitingCount(vns)
 	for idS, robotR in pairs(vns.connector.waitingRobots) do
@@ -135,58 +151,10 @@ function Connector.waitingCount(vns)
 	end
 end
 
-function Connector.recruitAll(vns)
-	-- recruit new
-	for idS, robotR in pairs(vns.connector.seenRobots) do
-		if vns.childrenRT[idS] == nil and 
-		   vns.connector.waitingRobots[idS] == nil and 
-		   (vns.parentR == nil or vns.parentR.idS ~= idS) and
-		   vns.brainS ~= idS then
-
-			Connector.recruit(vns, robotR)
-		end
-	end
-end
-
-function Connector.ackAll(vns)
-	-- if I don't have parent, ack a recruit
-	if vns.parentR == nil then
-		for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "recruit")) do
-			if msgM.dataT.brainS ~= vns.idS and 
-			   msgM.dataT.brainS ~= vns.lastBrainS and 
-			   vns.childrenRT[msgM.dataT.brainS] == nil and
-			   vns.childrenRT[msgM.fromS] == nil and
-			   (vns.connector.waitingRobots[msgM.fromS] == nil or
-			    vns.connector.waitingRobots[msgM.fromS] ~= nil and
-			    vns.connector.waitingRobots[msgM.fromS].numberN < msgM.dataT.numberN
-			   )
-			   then
-				local robotR = {
-					idS = msgM.fromS,
-					positionV3 = 
-						vector3(-msgM.dataT.positionV3):rotate(msgM.dataT.orientationQ:inverse()),
-					orientationQ = msgM.dataT.orientationQ:inverse(),
-					robotTypeS = msgM.dataT.fromTypeS,
-				}
-				vns.addParent(vns, robotR)
-				vns.Msg.send(msgM.fromS, "ack")
-				vns.brainS = msgM.dataT.brainS
-				vns.scaleN = msgM.dataT.scaleN
-				for idS, robotR in pairs(vns.childrenRT) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
-				end
-				for idS, robotR in pairs(vns.connector.waitingRobots) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
-				end
-				break
-			end
-		end
-	end
-end
-
 function Connector.step(vns)
 	Connector.update(vns)
 	Connector.waitingCount(vns)
+	Connector.brainSwitchCount(vns)
 
 	-- check ack
 	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "ack")) do
@@ -214,17 +182,98 @@ function Connector.step(vns)
 			if vns.idS == msgM.dataT.newBrainS then
 				vns.deleteParent(vns)
 			else
-				vns.brainS = msgM.dataT.newBrainS
-				vns.scaleN = msgM.dataT.scaleN
-				for idS, robotR in pairs(vns.childrenRT) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
-				end
-				for idS, robotR in pairs(vns.connector.waitingRobots) do
-					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS, scaleN = vns.scaleN})
-				end
+				vns.Connector.changeBrain(vns, msgM.dataT.newBrainS)
 			end
 		end
 	end
+end
+
+function Connector.recruitAll(vns)
+	-- recruit new
+	for idS, robotR in pairs(vns.connector.seenRobots) do
+		if vns.childrenRT[idS] == nil and 
+		   vns.connector.waitingRobots[idS] == nil and 
+		   (vns.parentR == nil or vns.parentR.idS ~= idS) and
+		   vns.brainS ~= idS then
+
+			Connector.recruit(vns, robotR)
+		end
+	end
+end
+
+function Connector.ackAll(vns)
+	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "recruit")) do
+	if vns.connector.brainSwitchCount == 0 and
+	   msgM.dataT.brainS ~= vns.brainS and
+	   msgM.dataT.brainS ~= vns.idS and
+	   vns.childrenRT[msgM.fromS] == nil and
+	   (
+	      vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() > vns.scale:totalNumber() or
+	      (
+	         vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() == 
+	                                                                   vns.scale:totalNumber() and
+	         (
+	            vns.connector.waitingRobots[msgM.fromS] == nil or
+	            vns.connector.waitingRobots[msgM.fromS] ~= nil and
+	            vns.connector.waitingRobots[msgM.fromS].numberN < msgM.dataT.numberN
+	         )
+	      )
+	   )
+	   then
+		local robotR = {
+			idS = msgM.fromS,
+			positionV3 = 
+				vector3(-msgM.dataT.positionV3):rotate(msgM.dataT.orientationQ:inverse()),
+			orientationQ = msgM.dataT.orientationQ:inverse(),
+			robotTypeS = msgM.dataT.fromTypeS,
+			scale = vns.ScaleManager.Scale:new(msgM.dataT.scale)
+		}
+		if vns.parentR ~= nil then
+			vns.Msg.send(vns.parentR.idS, "dismiss")
+			vns.parentR = nil
+		end
+		vns.addParent(vns, robotR)
+		vns.Msg.send(msgM.fromS, "ack")
+		vns.Connector.changeBrain(vns, msgM.dataT.brainS)
+	end
+	end
+	   
+	--[[
+	-- if I don't have parent, ack a recruit
+	if vns.parentR == nil and vns.connector.brainSwitchCount == 0 then
+		for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "recruit")) do
+			if msgM.dataT.brainS ~= vns.idS and 
+			   vns.childrenRT[msgM.dataT.brainS] == nil and
+			   vns.childrenRT[msgM.fromS] == nil and
+			   (vns.connector.waitingRobots[msgM.fromS] == nil or
+			    vns.connector.waitingRobots[msgM.fromS] ~= nil and
+			    vns.connector.waitingRobots[msgM.fromS].numberN < msgM.dataT.numberN
+			   )
+			   then
+				local robotR = {
+					idS = msgM.fromS,
+					positionV3 = 
+						vector3(-msgM.dataT.positionV3):rotate(msgM.dataT.orientationQ:inverse()),
+					orientationQ = msgM.dataT.orientationQ:inverse(),
+					robotTypeS = msgM.dataT.fromTypeS,
+					scale = vns.ScaleManager.Scale:new(msgM.dataT.scale)
+				}
+				vns.addParent(vns, robotR)
+				vns.Msg.send(msgM.fromS, "ack")
+				vns.brainS = msgM.dataT.brainS
+				vns.connector.brainSwitchCount = vns.scale:totalNumber()
+				for idS, robotR in pairs(vns.childrenRT) do
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+				end
+				for idS, robotR in pairs(vns.connector.waitingRobots) do
+					vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
+				end
+				break
+			end
+		end
+	else
+	end
+	--]]
 end
 
 ------ behaviour tree ---------------------------------------
