@@ -59,7 +59,9 @@ function Assigner.step(vns)
 
 	-- listen to assign
 	if vns.parentR ~= nil then for _, msgM in ipairs(vns.Msg.getAM(vns.parentR.idS, "assign")) do
-		vns.assigner.targetS = msgM.dataT.assignToS
+		if vns.childrenRT[msgM.dataT.assignToS] == nil then
+			vns.assigner.targetS = msgM.dataT.assignToS
+		end
 	end end
 
 	-- update assigning goalPoint

@@ -79,7 +79,6 @@ DMSG.enable()
 					{	robotTypeS = "drone",
 						positionV3 = vector3(-dis*2, 0, 0),
 						orientationQ = quaternion(0, vector3(0,0,1)),
-				--[[
 						children = {
 							{	robotTypeS = "pipuck",
 								positionV3 = vector3(-dis, -dis, 0),
@@ -101,10 +100,25 @@ DMSG.enable()
 										positionV3 = vector3(-dis, dis, 0),
 										orientationQ = quaternion(0, vector3(0,0,1)),
 									},
+									--[[
+									{	robotTypeS = "drone",
+										positionV3 = vector3(-dis*2, 0, 0),
+										orientationQ = quaternion(0, vector3(0,0,1)),
+										children = {
+											{	robotTypeS = "pipuck",
+												positionV3 = vector3(-dis, -dis, 0),
+												orientationQ = quaternion(0, vector3(0,0,1)),
+											},
+											{	robotTypeS = "pipuck",
+												positionV3 = vector3(-dis, dis, 0),
+												orientationQ = quaternion(0, vector3(0,0,1)),
+											},
+										},
+									},
+									--]]
 								},
 							},
 						},
-				--]]
 					},
 					{	robotTypeS = "drone",
 						positionV3 = vector3(0, -dis*2, 0),
@@ -161,7 +175,6 @@ function step()
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 
-	bt()
 
 	--[[
 	if vns.parentR ~= nil then
@@ -187,6 +200,7 @@ function step()
 	end
 	--[[
 	--]]
+	bt()
 end
 
 function reset()

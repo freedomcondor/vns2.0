@@ -20,7 +20,6 @@ end
 
 function step()
 	vns.prestep(vns)
-	bt()
 
 	--[[
 	if vns.parentR ~= nil then
@@ -45,6 +44,7 @@ function step()
 		--]]
 	end
 
+	bt()
 end
 
 function reset() end

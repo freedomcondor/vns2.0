@@ -93,6 +93,11 @@ function Connector.changeBrain(vns, newBrainS)
 end
 
 function Connector.update(vns)
+	if vns.parentR ~= nil and vns.childrenRT[vns.parentR.idS] ~= nil then
+		vns.deleteChild(vns, vns.parentR.idS)
+		vns.deleteParent(vns)
+	end
+
 	-- update waiting list
 	for idS, robotR in pairs(vns.connector.seenRobots) do
 		if vns.connector.waitingRobots[idS] ~= nil then
@@ -189,6 +194,7 @@ function Connector.step(vns)
 end
 
 function Connector.recruitAll(vns)
+	if vns.connector.brainSwitchCount ~= 0 then return end
 	-- recruit new
 	for idS, robotR in pairs(vns.connector.seenRobots) do
 		if vns.childrenRT[idS] == nil and 
@@ -236,6 +242,7 @@ function Connector.ackAll(vns)
 		vns.Msg.send(msgM.fromS, "ack")
 		vns.Connector.changeBrain(vns, msgM.dataT.brainS)
 	end
+	break
 	end
 	   
 	--[[
