@@ -13,6 +13,13 @@ function Driver.step(vns)
 		end
 	end
 
+	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "drive")) do
+		if vns.parentR == nil or 
+		   msgM.fromS ~= vns.parentR.idS then
+			vns.Msg.send(msgM.fromS, "dismiss")
+		end
+	end
+
 	-- send drive to children
 	for _, robotR in pairs(vns.childrenRT) do
 		if robotR.trajectory ~= nil then

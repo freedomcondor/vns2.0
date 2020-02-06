@@ -152,7 +152,8 @@ function Allocator.allocate(vns, allocating_type)
 				   branchR.requiring[allocating_type] > 0 then
 					i = i + 1
 					positionList[i] = {
-						positionV3 = branchR.positionV3,
+						--positionV3 = branchR.positionV3, -- TODO: 1. location from the real robot, not the branch
+						positionV3 = vns.childrenRT[branchR.allocated].positionV3,
 						index = vns.childrenRT[branchR.allocated] or branchR,
 					}
 				elseif branchR.allocated == nil and
@@ -220,6 +221,8 @@ function Allocator.allocate(vns, allocating_type)
 	local miniresult = nil
 	local minivalue = 999999999
 
+	if #positionList < 7 then
+
 	local result = arranger()
 	while result ~= nil do
 		local maxlength = 0
@@ -235,18 +238,30 @@ function Allocator.allocate(vns, allocating_type)
 		result = arranger()
 	end
 
+	else
+		miniresult = index
+	end
+
 	-- find the farthest robot for the same position
 	for i = 1, #positionList do
 		positionList[i].allocated = nil
-		positionList[i].allocatedcost = 0
-		--positionList[i].allocatedcost = 9999999999999
+		--positionList[i].allocatedcost = -9999999999999
+		positionList[i].allocatedcost = 9999999999999
 	end
 	for i = 1, #childrenList do
-		local cost = (positionList[miniresult[i]].positionV3 * 0.5 - childrenList[i].positionV3):length()
-		if costMatrix[i][miniresult[i]] > positionList[miniresult[i]].allocatedcost and
+		--local cost = (positionList[miniresult[i]].positionV3 * 0.5 - childrenList[i].positionV3):length()
+		local x = childrenList[i].positionV3.x
+		local y = childrenList[i].positionV3.y
+		local a = positionList[ miniresult[i] ].positionV3.x
+		local b = positionList[ miniresult[i] ].positionV3.y
+		--local cost =  math.sqrt(x*x+y*y) - math.abs(-a*x + b*y + a*a - b*b) / math.sqrt(a*a+b*b)		
+		--if costMatrix[i][miniresult[i]] > positionList[miniresult[i]].allocatedcost and
 		--if cost < positionList[miniresult[i]].allocatedcost and
+		local cost = (x-a/2)*(x-a/2) + (y-b/2)*(y-b/2)
+		if cost < positionList[miniresult[i]].allocatedcost and
 		   childrenList[i].index ~= nil then
-			positionList[miniresult[i]].allocatedcost = costMatrix[i][miniresult[i]]
+			--positionList[miniresult[i]].allocatedcost = costMatrix[i][miniresult[i]]
+			positionList[miniresult[i]].allocatedcost = cost
 			positionList[miniresult[i]].allocated = childrenList[i]
 		end
 	end
