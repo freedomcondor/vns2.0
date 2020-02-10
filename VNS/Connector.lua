@@ -93,10 +93,6 @@ function Connector.changeBrain(vns, newBrainS)
 end
 
 function Connector.update(vns)
-	if vns.parentR ~= nil and vns.childrenRT[vns.parentR.idS] ~= nil then
-		vns.deleteChild(vns, vns.parentR.idS)
-		vns.deleteParent(vns)
-	end
 
 	-- update waiting list
 	for idS, robotR in pairs(vns.connector.seenRobots) do
@@ -189,6 +185,19 @@ function Connector.step(vns)
 			else
 				vns.Connector.changeBrain(vns, msgM.dataT.newBrainS)
 			end
+		end
+	end
+
+	-- valid check
+	if vns.parentR ~= nil and vns.childrenRT[vns.parentR.idS] ~= nil then
+		vns.deleteChild(vns, vns.parentR.idS)
+		vns.deleteParent(vns)
+	end
+	-- check non parent commands
+	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "drive")) do
+		if vns.parentR == nil or 
+		   msgM.fromS ~= vns.parentR.idS then
+			vns.Msg.send(msgM.fromS, "dismiss")
 		end
 	end
 end
