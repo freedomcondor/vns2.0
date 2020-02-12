@@ -6,9 +6,16 @@ function Driver.step(vns)
 	if vns.parentR ~= nil then
 		for _, msgM in pairs(vns.Msg.getAM(vns.parentR.idS, "drive")) do
 			-- a drive message data is:
-			--	{ transV3, rotateV3 }
+			--	{ 	transV3, rotateV3,
+			--		positionV3, orientationQ
+			--	}
 			local transV3 = msgM.dataT.transV3:rotate(vns.parentR.orientationQ)
 			local rotateV3 = msgM.dataT.rotateV3:rotate(vns.parentR.orientationQ)
+			vns.goalPoint = {
+				positionV3 = msgM.dataT.positionV3:rotate(vns.parentR.orientationQ) + 
+				             vns.parentR.positionV3,
+				orientationQ = msgM.dataT.orientationQ * vns.parentR.orientationQ
+			}
 			Driver.move(transV3, rotateV3)
 		end
 	end
@@ -40,8 +47,17 @@ function Driver.step(vns)
 			{
 				transV3 = goalPointTransV3,
 				rotateV3 = goalPointRotateV3,
-			}
-		)
+				positionV3 = robotR.goalPoint.positionV3,
+				orientationQ = robotR.goalPoint.orientationQ,
+			})
+		else
+			vns.Msg.send(robotR.idS, "drive",
+			{
+				transV3 = vector3(),
+				rotateV3 = vector3(),
+				positionV3 = robotR.positionV3,
+				orientationQ = robotR.orientationQ,
+			})
 		end
 	end
 end

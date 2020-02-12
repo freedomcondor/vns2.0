@@ -14,7 +14,7 @@ function pipuck_set_velocity(x, y)
 end
 
 function pipuck_move(transV3, rotateV3)
-	local left = transV3.x
+	local left = transV3.x * 0.4
 	local right = transV3.x
 	local turnrate = 2.0
 

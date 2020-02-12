@@ -93,7 +93,6 @@ function Connector.changeBrain(vns, newBrainS)
 end
 
 function Connector.update(vns)
-
 	-- update waiting list
 	for idS, robotR in pairs(vns.connector.seenRobots) do
 		if vns.connector.waitingRobots[idS] ~= nil then

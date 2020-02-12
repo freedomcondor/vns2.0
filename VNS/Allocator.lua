@@ -18,14 +18,25 @@ end
 
 function Allocator.reset(vns)
 	vns.allocator = {}
+	vns.allocator.change = 0
+end
+
+function Allocator.addChild(vns)
+	vns.allocator.change = 0
+end
+
+function Allocator.deleteChild(vns)
+	vns.allocator.change = 0
 end
 
 function Allocator.addParent(vns)
 	vns.Allocator.setMorphology(vns, nil)
+	vns.allocator.change = 0
 end
 
 function Allocator.deleteParent(vns)
 	vns.Allocator.setMorphology(vns, vns.allocator.gene)
+	vns.allocator.change = 0
 end
 
 function Allocator.setGene(vns, morph)
@@ -41,13 +52,54 @@ function Allocator.setMorphology(vns, morph)
 end
 
 function Allocator.step(vns)
-	DMSG(vns.idS)
-
 	-- receive branch
 	if vns.parentR ~= nil then for _, msgM in ipairs(vns.Msg.getAM(vns.parentR.idS, "branch")) do
 		Allocator.setMorphology(vns, msgM.dataT.target)
+		vns.allocator.change = 0
 	end end
 
+	if vns.allocator.change <= 0 then
+		Allocator.exe_allocate(vns)
+		vns.allocator.change = 10
+	else
+		vns.allocator.change = vns.allocator.change - 1
+	end
+
+	-- send cmd to children
+	for idS, robotR in pairs(vns.childrenRT) do
+		if robotR.allocate ~= nil then -- skip non-allocated children (this may happen if a child is newly recruited and haven't reported its scale)
+
+		if robotR.allocate.idS == nil then
+			-- it is a branch, send branch and disassign
+			if robotR.robotTypeS == robotR.allocate.robotTypeS then
+				vns.Msg.send(robotR.idS, "branch", {target = robotR.allocate})
+			else
+				vns.Msg.send(robotR.idS, "branch", {target = nil})
+			end
+			robotR.goalPoint = {
+				positionV3 = robotR.allocate.positionV3,
+				orientationQ = robotR.allocate.orientationQ,
+			}
+			--[[
+			if vns.goalPoint ~= nil then
+				robotR.goalPoint.positionV3 = vector3(robotR.goalPoint.positionV3):rotate(vns.goalPoint.orientationQ) +
+				                              vns.goalPoint.positionV3
+				robotR.goalPoint.orientationQ = robotR.goalPoint.orientationQ * vns.goalPoint.orientationQ
+			end
+			--]]
+			if robotR.assignTargetS ~= nil then
+				vns.Assigner.assign(vns, robotR.idS, nil)
+			end
+		else
+			-- it is a robot, assign
+			vns.Assigner.assign(vns, robotR.idS, robotR.allocate.idS)
+			vns.Msg.send(robotR.idS, "branch", {target = nil})
+		end
+	end end
+end
+
+function Allocator.exe_allocate(vns)
+	DMSG("I am exe_allocate")
 	for idS, robotR in pairs(vns.childrenRT) do
 		robotR.allocate = nil
 	end
@@ -59,14 +111,19 @@ function Allocator.step(vns)
 	if vns.allocator.target ~= nil and vns.allocator.target.children ~= nil then
 		for index, branchR in ipairs(vns.allocator.target.children) do
 			-- find the farthest same type child allocated to it
-			local dis = 0
+			--local dis = 0
+			local dis = math.huge
 			local theChild = nil
 			for idS, robotR in pairs(vns.childrenRT) do
 				if robotR.allocate == branchR and
 				   robotR.robotTypeS == branchR.robotTypeS then
-					local relativeVector = robotR.positionV3 - branchR.positionV3
+					--local relativeVector = robotR.positionV3 - branchR.positionV3
+					--local relativeVector = vector3(robotR.positionV3 - branchR.positionV3 * 0.5)
+					local relativeVector = vector3(robotR.positionV3)
+					relativeVector.y = relativeVector.y / 3 -- TODO
 					relativeVector.z = 0
-					if relativeVector:length() > dis then
+					--if relativeVector:length() > dis then
+					if relativeVector:length() < dis then
 						dis = relativeVector:length()
 						theChild = robotR
 					end
@@ -86,31 +143,6 @@ function Allocator.step(vns)
 			end
 		end
 	end
-
-	-- send cmd to children
-	for idS, robotR in pairs(vns.childrenRT) do
-		if robotR.allocate ~= nil then -- skip non-allocated children (this may happen if a child is newly recruited and haven't reported its scale)
-
-		if robotR.allocate.idS == nil then
-			-- it is a branch, send branch and disassign
-			if robotR.robotTypeS == robotR.allocate.robotTypeS then
-				vns.Msg.send(robotR.idS, "branch", {target = robotR.allocate})
-			else
-				vns.Msg.send(robotR.idS, "branch", {target = nil})
-			end
-			robotR.goalPoint = {
-				positionV3 = robotR.allocate.positionV3,
-				orientationQ = robotR.allocate.orientationQ,
-			}
-			if robotR.assignTargetS ~= nil then
-				vns.Assigner.assign(vns, robotR.idS, nil)
-			end
-		else
-			-- it is a robot, assign
-			vns.Assigner.assign(vns, robotR.idS, robotR.allocate.idS)
-			vns.Msg.send(robotR.idS, "branch", {target = nil})
-		end
-	end end
 end
 
 function Allocator.allocate(vns, allocating_type)
@@ -196,9 +228,21 @@ function Allocator.allocate(vns, allocating_type)
 	for i = 1, #sourceList do originCost[i] = {} end
 	for i = 1, #sourceList do
 		for j = 1, #targetList do
-			local relativeVector = sourceList[i].index.positionV3 - targetList[j].index.positionV3
+			local targetPosition = vector3(targetList[j].index.positionV3)
+			--[[
+			if vns.goalPoint ~= nil then
+				targetPosition = targetPosition:rotate(vns.goalPoint.orientationQ) + vns.goalPoint.positionV3
+			end
+			--]]
+			local relativeVector = sourceList[i].index.positionV3 - targetPosition
 			relativeVector.z = 0
 			originCost[i][j] = relativeVector:length()
+			-- if the target is different type, allocate last -- TODO: DELETE
+			---[[
+			if targetList[j].index.robotTypeS ~= allocating_type then 
+				originCost[i][j] = originCost[i][j] + 5
+			end
+			--]]
 		end
 	end
 
@@ -232,6 +276,8 @@ end
 
 -------------------------------------------------------------------------------
 function GraphMatch(sourceList, targetList, originCost)
+	DMSG("originCost")
+	DMSG(originCost)
 	-- create a enhanced cost matrix
 	-- and orderlist, to sort everything in originCost
 	local orderList = {}

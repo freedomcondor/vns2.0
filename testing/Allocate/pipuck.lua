@@ -21,6 +21,7 @@ end
 function step()
 	vns.prestep(vns)
 
+	bt()
 	--[[
 	if vns.parentR ~= nil then
 		drawArrow("green", 
@@ -30,6 +31,7 @@ function step()
 	end
 	--]]
 
+	--[[
 	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
 			tostring(vector3(0,0,0)),
@@ -41,10 +43,10 @@ function step()
 			tostring(child.positionV3),
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
-		--]]
+		--] ]
 	end
+	--]]
 
-	bt()
 end
 
 function reset() end

@@ -24,7 +24,7 @@
       </actuators>
       <sensors>
         <pipuck_differential_drive implementation="default" />
-        <pipuck_rangefinders implementation="default" show_rays="true" />
+        <pipuck_rangefinders implementation="default" show_rays="false" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
       <params script="testing/Allocate/pipuck.lua" />
@@ -82,32 +82,32 @@
       </entity>
     </distribute-->
     <drone id="drone0">
-      <body position="-3,0,0" orientation="0,0,0"/>
+      <body position="1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone1">
-      <body position="-1,1,0" orientation="0,0,0"/>
+      <body position="0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone2">
-      <body position="-2,1,0" orientation="0,0,0"/>
+      <body position="-1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone3">
-      <body position="0,1,0" orientation="0,0,0"/>
-      <controller config="drone"/>
-    </drone>
-
-    <drone id="drone4">
       <body position="1,1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
+    <drone id="drone4">
+      <body position="0,1,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
     <drone id="drone5">
-      <body position="2,1,0" orientation="0,0,0"/>
+      <body position="-1,1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
@@ -137,7 +137,7 @@
 	-->
 
     <distribute>
-      <position method="uniform" min="-2.5,-2.5,0" max="-0.5,-0.5,0" />
+      <position method="uniform" min="-0.5,-1.0,0" max="2.0,1.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <entity quantity="14" max_trials="100">
         <pipuck id="pipuck">

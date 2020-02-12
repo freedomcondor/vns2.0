@@ -175,6 +175,7 @@ function step()
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 
+	bt()
 
 	--[[
 	if vns.parentR ~= nil then
@@ -185,6 +186,7 @@ function step()
 	end
 	--]]
 
+	--[[
 	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
 			tostring(vector3(0,0,0)),
@@ -196,11 +198,9 @@ function step()
 			tostring(child.positionV3),
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
-		--]]
+		--] ]
 	end
-	--[[
 	--]]
-	bt()
 end
 
 function reset()
