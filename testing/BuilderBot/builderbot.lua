@@ -3,13 +3,14 @@ package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
 DMSG = require("DebugMessage")
+--require("Debugger")
 
 require("pipuckAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
 
 DMSG.enable()
---require("Debugger")
+DMSG.disable("Allocator")
 
 --local vns
 function init()
@@ -32,7 +33,7 @@ function step()
 	end
 	--]]
 
-	--[[
+	---[[
 	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
 			tostring(vector3(0,0,0)),
@@ -44,7 +45,7 @@ function step()
 			tostring(child.positionV3),
 			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
 		)
-		--] ]
+		--]]
 	end
 	--]]
 

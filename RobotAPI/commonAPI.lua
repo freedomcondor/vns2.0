@@ -5,6 +5,7 @@ function process_time()
 end
 
 function drawArrow(color, begin, finish)
+	if robot.debug == nil then return end
 	robot.debug.draw("arrow(" .. color .. ")(" .. 
 		tostring(begin) .. ")(" ..
 		tostring(finish) .. ")"

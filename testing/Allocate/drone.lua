@@ -2,11 +2,12 @@ package.path = package.path .. ";RobotAPI/?.lua"
 package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
+DMSG = require("DebugMessage")
+
 require("droneAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
 
-DMSG = require("DebugMessage")
 DMSG.enable()
 --require("Debugger")
 
@@ -164,11 +165,21 @@ function init()
 	vns = VNS.create("drone")
 	vns.setGene(vns, structure)
 	bt = BehaviorTree.create(VNS.create_vns_node(vns))
+
+	robot.directional_leds.set_all_colors("blue")
+
+	led_count = 0
 end
 
 function step()
 	-- check height
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end
+
+	robot.directional_leds.set_single_color(math.fmod(led_count, 4) + 1, "red")
+	robot.directional_leds.set_single_color(math.fmod(led_count + 1, 4) + 1, "blue")
+	robot.directional_leds.set_single_color(math.fmod(led_count + 2, 4) + 1, "green")
+	robot.directional_leds.set_single_color(math.fmod(led_count + 3, 4) + 1, "black")
+	led_count = led_count + 1
 
 	vns.prestep(vns)
 	process_time()

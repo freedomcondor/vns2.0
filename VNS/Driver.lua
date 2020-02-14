@@ -2,6 +2,10 @@
 ------------------------------------------------------
 local Driver = {}
 
+function Driver.deleteParent(vns)
+	vns.goalPoint = nil
+end
+
 function Driver.step(vns)
 	if vns.parentR ~= nil then
 		for _, msgM in pairs(vns.Msg.getAM(vns.parentR.idS, "drive")) do

@@ -30,6 +30,10 @@ vim coding.sh -c "
 	tabnew testing/ScaleManager/drone.lua
 	tabnew testing/ScaleManager/pipuck.lua
 
+	tabnew testing/BuilderBot/vns.argos
+	tabnew testing/BuilderBot/drone.lua
+	tabnew testing/BuilderBot/builderbot.lua
+
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua

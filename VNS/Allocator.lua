@@ -1,6 +1,6 @@
 -- Allocator -----------------------------------------
 ------------------------------------------------------
-
+DMSG.register("Allocator")
 --local Arrangement = require("Arrangement")
 local MinCostFlowNetwork = require("MinCostFlowNetwork")
 
@@ -80,7 +80,7 @@ function Allocator.step(vns)
 				positionV3 = robotR.allocate.positionV3,
 				orientationQ = robotR.allocate.orientationQ,
 			}
-			--[[
+			---[[
 			if vns.goalPoint ~= nil then
 				robotR.goalPoint.positionV3 = vector3(robotR.goalPoint.positionV3):rotate(vns.goalPoint.orientationQ) +
 				                              vns.goalPoint.positionV3

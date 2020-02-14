@@ -55,8 +55,14 @@ function drone_detect_tags()
 			-- check existed
 			if index[tag.id] == nil then
 				index[tag.id] = true
+				local robotTypeS
+				if 0 <= tag.id and tag.id < 20 then robotTypeS = "pipuck"
+				elseif 20 <= tag.id and tag.id < 40 then robotTypeS = "builderbot"
+				end
+				DMSG(tag.id)
 				tags[#tags + 1] = {
-					idS = "pipuck" .. math.floor(tag.id),
+					--idS = "pipuck" .. math.floor(tag.id),
+					idS = robotTypeS .. math.floor(tag.id),
 					positionV3 = (camera.transform.position + 
 					              vector3(tag.position):rotate(camera.transform.orientation)
 								 ):rotate(drone_offset),
