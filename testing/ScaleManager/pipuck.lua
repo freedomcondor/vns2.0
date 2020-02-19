@@ -2,11 +2,12 @@ package.path = package.path .. ";RobotAPI/?.lua"
 package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
+DMSG = require("DebugMessage")
+
 require("pipuckAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
 
-DMSG = require("DebugMessage")
 DMSG.enable()
 --require("Debugger")
 

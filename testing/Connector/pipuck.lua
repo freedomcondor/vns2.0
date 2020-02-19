@@ -2,10 +2,10 @@ package.path = package.path .. ";RobotAPI/?.lua"
 package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
+DMSG = require("DebugMessage")
 require("pipuckAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
-DMSG = require("DebugMessage")
 DMSG.enable()
 
 function init()
@@ -17,7 +17,7 @@ end
 
 function step()
 	--pipuck_move(vector3(0.1, -0.5, 0), vector3(0,0,0))
-
+	vns.prestep(vns)
 	bt()
 
 	if vns.parentR ~= nil then

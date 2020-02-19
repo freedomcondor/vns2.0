@@ -55,14 +55,10 @@ function drone_detect_tags()
 			-- check existed
 			if index[tag.id] == nil then
 				index[tag.id] = true
-				local robotTypeS
-				if 0 <= tag.id and tag.id < 20 then robotTypeS = "pipuck"
-				elseif 20 <= tag.id and tag.id < 40 then robotTypeS = "builderbot"
-				end
-				DMSG(tag.id)
 				tags[#tags + 1] = {
 					--idS = "pipuck" .. math.floor(tag.id),
-					idS = robotTypeS .. math.floor(tag.id),
+					--idS = robotTypeS .. math.floor(tag.id),
+					id = tag.id,
 					positionV3 = (camera.transform.position + 
 					              vector3(tag.position):rotate(camera.transform.orientation)
 								 ):rotate(drone_offset),
@@ -82,9 +78,19 @@ function drone_clear_seenRobots(seenRobots)
 end
 
 function drone_add_seenRobots(seenRobots, tags)
-	for i, v in ipairs(tags) do
-		seenRobots[v.idS] = v
-		seenRobots[v.idS].robotTypeS = "pipuck"
+	for i, tag in ipairs(tags) do
+		local robotTypeS
+		if 0 == tag.id then robotTypeS = "block"
+		elseif 1 <= tag.id and tag.id <= 20 then robotTypeS = "pipuck"
+		elseif 21 <= tag.id and tag.id <= 40 then robotTypeS = "builderbot"
+		end
+
+		local idS = robotTypeS .. math.floor(tag.id)
+
+		seenRobots[idS] = tag
+		seenRobots[idS].robotTypeS = robotTypeS
+		seenRobots[idS].idS = idS
+		seenRobots[idS].id = nil
 	end
 end
 

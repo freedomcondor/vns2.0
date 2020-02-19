@@ -92,7 +92,7 @@
     </drone>
 
     <!-- add pi-puck robots -->
-    <pipuck id="pipuck0">
+    <pipuck id="pipuck1">
       <body position="-3,0,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
     </pipuck>

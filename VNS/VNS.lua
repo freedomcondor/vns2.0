@@ -75,7 +75,9 @@ function VNS.reset(vns)
 end
 
 function VNS.prestep(vns)
-	if vns.parentR == nil then vns.Driver.move(vector3(), vector3()) end
+	if vns.robotTypeS ~= "builderbot" then
+		if vns.parentR == nil then vns.Driver.move(vector3(), vector3()) end
+	end
 	vns.Msg.prestep(vns)
 	for i, module in ipairs(VNS.Modules) do
 		if type(module.prestep) == "function" then
@@ -122,7 +124,7 @@ function VNS.setGene(vns, morph)
 	end
 end
 
-function VNS.create_vns_node(vns)
+function VNS.create_vns_node_without_drive(vns)
 	local pre_connector_node
 	if vns.robotTypeS == "drone" then
 		pre_connector_node = {
@@ -130,6 +132,11 @@ function VNS.create_vns_node(vns)
 			VNS.DroneConnector.create_droneconnector_node(vns),
 		}}
 	elseif vns.robotTypeS == "pipuck" then
+		pre_connector_node = {
+			type = "sequence", children = {
+			VNS.PipuckConnector.create_pipuckconnector_node(vns),
+		}}
+	elseif vns.robotTypeS == "builderbot" then
 		pre_connector_node = {
 			type = "sequence", children = {
 			VNS.PipuckConnector.create_pipuckconnector_node(vns),
@@ -144,9 +151,17 @@ function VNS.create_vns_node(vns)
 		vns.ScaleManager.create_scalemanager_node(vns),
 		vns.Assigner.create_assigner_node(vns),
 		vns.Allocator.create_allocator_node(vns),
-		vns.Driver.create_driver_node(vns),
+		--vns.Driver.create_driver_node(vns),
 	},}
 
+end
+
+function VNS.create_vns_node(vns)
+	return { 
+		type = "sequence", children = {
+		vns.create_vns_node_without_drive(vns),
+		vns.Driver.create_driver_node(vns),
+	},}
 end
 
 return VNS

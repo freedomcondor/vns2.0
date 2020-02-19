@@ -99,12 +99,13 @@ function Allocator.step(vns)
 end
 
 function Allocator.exe_allocate(vns)
-	DMSG("I am exe_allocate")
 	for idS, robotR in pairs(vns.childrenRT) do
 		robotR.allocate = nil
 	end
+
 	Allocator.allocate(vns, "drone")
 	Allocator.allocate(vns, "pipuck")
+	Allocator.allocate(vns, "builderbot")
 
 	-- now every children has a allocate
 	-- for each branch, 
@@ -266,7 +267,7 @@ function Allocator.allocate(vns, allocating_type)
 		sourceList[i].index.allocate = targetList[maxT].index
 	end end end
 
-	---[[
+	--[[
 	DMSG("source list")
 	DMSG(sourceList, 1, "children")
 	DMSG("target list")
@@ -276,8 +277,8 @@ end
 
 -------------------------------------------------------------------------------
 function GraphMatch(sourceList, targetList, originCost)
-	DMSG("originCost")
-	DMSG(originCost)
+	--DMSG("originCost")
+	--DMSG(originCost)
 	-- create a enhanced cost matrix
 	-- and orderlist, to sort everything in originCost
 	local orderList = {}
@@ -313,8 +314,8 @@ function GraphMatch(sourceList, targetList, originCost)
 		end
 	end
 
-	DMSG("cost")
-	DMSG(cost)
+	--DMSG("cost")
+	--DMSG(cost)
 
 	-- create a flow network
 	local C = {}

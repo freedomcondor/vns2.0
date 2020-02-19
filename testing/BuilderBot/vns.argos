@@ -40,7 +40,7 @@
         <wifi implementation="default" />
       </actuators>
       <sensors>
-        <drone_cameras_system implementation="default" show_frustum="true" show_tag_rays="true" />
+        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" />
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
@@ -61,16 +61,16 @@
       </actuators>
       <sensors>
         <builderbot_camera_system implementation="default"
-                                  show_frustum="true" 
-                                  show_tag_rays="true"
-                                  show_led_rays="true" />
+                                  show_frustum="false" 
+                                  show_tag_rays="false"
+                                  show_led_rays="false" />
         <builderbot_rangefinders implementation="default"
-                                 show_rays="true" />
+                                 show_rays="false" />
         <builderbot_system implementation="default" />
         <builderbot_differential_drive implementation="default" />
         <builderbot_electromagnet_system implementation="default" />
         <builderbot_lift_system implementation="default" />
-        <builderbot_nfc implementation="default" show_rays="true" />
+        <builderbot_nfc implementation="default" show_rays="false" />
         <wifi implementation="default" />
       </sensors>
 	  <params script="testing/BuilderBot/builderbot.lua" />
@@ -123,49 +123,49 @@
         </drone>
       </entity>
     </distribute-->
-    <drone id="drone0">
+    <drone id="drone1">
       <body position="1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
-    <drone id="drone1">
+    <drone id="drone2">
       <body position="0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
-    <builderbot id="builderbot20" debug="false">
+    <builderbot id="builderbot21" debug="false">
       <body position="-0.15,0,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
 
-    <builderbot id="builderbot21" debug="false">
+	<!--
+    <builderbot id="builderbot22" debug="false">
       <body position="0.25,0,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
 
-    <builderbot id="builderbot22" debug="false">
+    <builderbot id="builderbot23" debug="false">
       <body position="0.25,0.5,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
 
-    <builderbot id="builderbot23" debug="false">
+    <builderbot id="builderbot24" debug="false">
       <body position="-0.25,0.5,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
 
-    <builderbot id="builderbot24" debug="false">
+    <builderbot id="builderbot25" debug="false">
       <body position="0.5,0.5,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
 
-    <builderbot id="builderbot25" debug="false">
+    <builderbot id="builderbot26" debug="false">
       <body position="0.5,0,0" orientation="0,0,0"/>
       <controller config="builderbot"/>
     </builderbot>
-	<!--
 	-->
 
-    <block id="block21" debug="false">
+    <block id="block0" debug="false">
       <body position="1,-0.5,0" orientation="0,0,0"/>
       <controller config="block"/>
     </block>
@@ -221,16 +221,16 @@
       <controller config="pipuck"/>
     </pipuck>
 
+	-->
     <distribute>
       <position method="uniform" min="-0.5,-1.0,0" max="2.0,1.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <entity quantity="14" max_trials="100">
+      <entity quantity="6" base_num="1" max_trials="100">
         <pipuck id="pipuck">
           <controller config="pipuck"/>
         </pipuck>
       </entity>
     </distribute>
-	-->
   </arena>
 
   <!-- ******************* -->

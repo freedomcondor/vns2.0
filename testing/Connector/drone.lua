@@ -2,11 +2,12 @@ package.path = package.path .. ";RobotAPI/?.lua"
 package.path = package.path .. ";VNS/?.lua"
 package.path = package.path .. ";Tools/?.lua"
 
+DMSG = require("DebugMessage")
+
 require("droneAPI")
 local VNS = require("VNS")
 local BehaviorTree = require("luabt")
 
-DMSG = require("DebugMessage")
 DMSG.enable()
 --require("Debugger")
 
@@ -26,6 +27,7 @@ function step()
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end
 
 	process_time()
+	vns.prestep(vns)
 
 	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
 
