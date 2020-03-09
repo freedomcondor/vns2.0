@@ -82,8 +82,8 @@ function Connector.changeBrain(vns, newBrainS)
 			max = robotR.scale:totalNumber()
 		end
 	end
-	--vns.connector.brainSwitchCount = max + 2
-	vns.connector.brainSwitchCount = 0
+	vns.connector.brainSwitchCount = max + 2
+	--vns.connector.brainSwitchCount = 0
 
 	for idS, robotR in pairs(vns.childrenRT) do
 		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
