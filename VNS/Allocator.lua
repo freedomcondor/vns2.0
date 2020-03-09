@@ -152,15 +152,20 @@ function Allocator.allocate(vns, allocating_type)
 	local sourceSum = 0
 	local sourceList = {}
 	for idS, robotR in pairs(vns.childrenRT) do
-		if robotR.scale[allocating_type] ~= nil and robotR.scale[allocating_type] ~= 0 then
+		if robotR.scale[allocating_type] ~= nil and robotR.scale[allocating_type] ~= 0 and
+		   robotR.robotTypeS == allocating_type
+		then
 			i = i + 1
 			sourceList[i] = {
-				number = robotR.scale[allocating_type],
+				--number = robotR.scale[allocating_type],
+				number = 1,
 				index = robotR,
 			}
-			sourceSum = sourceSum + robotR.scale[allocating_type]
+			--sourceSum = sourceSum + robotR.scale[allocating_type]
+			sourceSum = sourceSum + 1
 		end
 	end
+	--[[
 	if vns.parentR ~= nil and vns.allocator.target ~= nil then
 		local parentHas = vns.parentR.scale - vns.allocator.target.parentScale
 		if parentHas[allocating_type] ~= nil and
@@ -173,6 +178,7 @@ function Allocator.allocate(vns, allocating_type)
 			sourceSum = sourceSum + parentHas[allocating_type]
 		end
 	end
+	--]]
 
 	if #sourceList == 0 then return end
 	sourceList.sum = sourceSum

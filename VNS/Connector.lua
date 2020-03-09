@@ -82,7 +82,8 @@ function Connector.changeBrain(vns, newBrainS)
 			max = robotR.scale:totalNumber()
 		end
 	end
-	vns.connector.brainSwitchCount = max + 2
+	--vns.connector.brainSwitchCount = max + 2
+	vns.connector.brainSwitchCount = 0
 
 	for idS, robotR in pairs(vns.childrenRT) do
 		vns.Msg.send(idS, "newBrain", {newBrainS = vns.brainS})
@@ -216,6 +217,7 @@ function Connector.recruitAll(vns)
 end
 
 function Connector.ackAll(vns)
+	if vns.parentR ~= nil then return end
 	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "recruit")) do
 	if vns.connector.brainSwitchCount == 0 and
 	   msgM.dataT.brainS ~= vns.brainS and

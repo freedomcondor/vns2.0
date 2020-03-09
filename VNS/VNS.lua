@@ -8,7 +8,8 @@ VNS.DroneConnector = require("DroneConnector")
 VNS.PipuckConnector = require("PipuckConnector")
 
 VNS.Assigner = require("Assigner")
-VNS.Allocator = require("Allocator")
+--VNS.Allocator = require("Allocator")
+VNS.Allocator = require("Allocator_for_old_vns")
 VNS.ScaleManager = require("ScaleManager")
 VNS.Driver= require("Driver")
 
