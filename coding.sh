@@ -14,8 +14,9 @@ vim coding.sh -c "
 
 	tabnew VNS/Assigner.lua
 
-	tabnew VNS/Allocator.lua
+	tabnew VNS/Allocator_for_old_vns.lua
 	tabnew VNS/ScaleManager.lua
+	tabnew VNS/Avoider.lua
 "
 <<COMMENT
 	tabnew testing/BuilderBot/vns.argos

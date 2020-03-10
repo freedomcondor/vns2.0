@@ -103,7 +103,7 @@ function Driver.create_driver_node(vns)
 	end
 end
 
-function Driver:move(transV3, rotateV3)
+function Driver.move(transV3, rotateV3)
 	print("VNS.Driver.move needs to be implemented")
 end
 

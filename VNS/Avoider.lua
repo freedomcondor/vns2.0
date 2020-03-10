@@ -14,14 +14,14 @@ function Avoider.step(vns, surpress_or_not)
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, vns.parentR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.50)
+				            	0.70)
 			end
 
 			-- avoid my self
 			avoid_speed.positionV3 =
 				Avoider.add(childR.positionV3, vector3(),
 				            avoid_speed.positionV3,
-				            0.50)
+				            0.70)
 
 			-- avoid children
 			for jidS, jchildR in pairs(vns.childrenRT) do
@@ -31,7 +31,7 @@ function Avoider.step(vns, surpress_or_not)
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, jchildR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.50)
+				            	0.70)
 			end end end
 		end
 
@@ -63,7 +63,7 @@ function Avoider.add(myLocV3, obLocV3, accumulatorV3, threshold)
 	local ans = accumulatorV3
 	if d < threshold then
 		dV3:normalize()
-		local transV3 = 0.01 / d * dV3
+		local transV3 = 0.015 / d * dV3
 		ans = ans + transV3
 	end
 	return ans

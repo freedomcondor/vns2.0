@@ -24,6 +24,7 @@ function PipuckConnector.step(vns)
 				vns.connector.seenRobots[quad.idS] = quad
 			end
 
+			--[[
 			-- add other pipucks to seenRobots
 			for idS, R in pairs(msgM.dataT.mySight) do
 				if idS ~= vns.idS and vns.connector.seenRobots[idS] == nil then -- TODO average
@@ -37,6 +38,7 @@ function PipuckConnector.step(vns)
 					}
 				end
 			end
+			--]]
 		end
 	end
 end

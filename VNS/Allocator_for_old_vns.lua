@@ -51,7 +51,20 @@ end
 
 function Allocator.setMorphology(vns, morph)
 	vns.allocator.target = morph
+	Allocator.reset(vns)
+end
+
+function Allocator.reset(vns)
+	for idS, childR in pairs(vns.childrenRT) do
+		vns.Assigner.assign(vns, idS, nil)
+	end
 	vns.allocator.allocated_children = {}
+	if vns.allocator.target ~= nil and
+	   vns.allocator.target.children ~= nil then
+		for _, branchT in ipairs(vns.allocator.target.children) do
+			branchT.actorS = nil
+		end
+	end
 end
 
 function Allocator.step(vns)

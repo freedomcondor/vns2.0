@@ -178,6 +178,10 @@ function step()
 
 	bt()
 
+	if vns.parentR == nil then
+		vns.Driver.move(vector3(0.05, 0, 0), vector3(0,0,0))
+	end
+
 	--[[
 	if vns.parentR ~= nil then
 		drawArrow("green", 
