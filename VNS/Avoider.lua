@@ -2,6 +2,11 @@
 ------------------------------------------------------
 local Avoider = {}
 
+function Avoider.create(vns)
+	vns.avoider = {}
+	vns.avoider.obstacles = {}
+end
+
 function Avoider.step(vns, surpress_or_not)
 	-- for each children avoid
 	for idS, childR in pairs(vns.childrenRT) do
@@ -36,6 +41,7 @@ function Avoider.step(vns, surpress_or_not)
 		end
 
 		if childR.robotTypeS == "pipuck" then
+			-- avoid seen pipucks
 			for jidS, robotR in pairs(vns.connector.seenRobots) do
 				if robotR.robotTypeS == "pipuck" and jidS ~= idS then
 					avoid_speed.positionV3 =
@@ -43,6 +49,14 @@ function Avoider.step(vns, surpress_or_not)
 									avoid_speed.positionV3,
 						            0.15)
 				end
+			end
+
+			-- avoid obstacles
+			for j, obstacle in ipairs(vns.avoider.obstacles) do
+				avoid_speed.positionV3 = 
+					Avoider.add(childR.positionV3, obstacle.positionV3,
+								avoid_speed.positionV3,
+					            0.30)
 			end
 		end
 

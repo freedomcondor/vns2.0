@@ -156,6 +156,8 @@ DMSG.enable()
 		},
 	}
 
+obstacles = {}
+
 --local vns
 function init()
 	linkDroneInterface(VNS)
@@ -174,7 +176,9 @@ function step()
 	vns.prestep(vns)
 	process_time()
 
-	drone_add_seenRobots(vns.connector.seenRobots, drone_detect_tags())
+	local tags = drone_detect_tags()
+	drone_add_seenRobots(vns.connector.seenRobots, tags)
+	drone_add_obstacles(vns.avoider.obstacles, tags)
 
 	bt()
 

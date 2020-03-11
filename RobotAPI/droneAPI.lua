@@ -53,7 +53,7 @@ function drone_detect_tags()
 	for _, camera in ipairs(robot.cameras_system) do
 		for _, tag in ipairs(camera.tags) do
 			-- check existed
-			if index[tag.id] == nil then
+			if index[tag.id] == nil then --TODO: same id detect
 				index[tag.id] = true
 				tags[#tags + 1] = {
 					--idS = "pipuck" .. math.floor(tag.id),
@@ -85,12 +85,25 @@ function drone_add_seenRobots(seenRobots, tags)
 		elseif 21 <= tag.id and tag.id <= 40 then robotTypeS = "builderbot"
 		end
 
-		local idS = robotTypeS .. math.floor(tag.id)
+		if robotTypeS ~= nil then
+			local idS = robotTypeS .. math.floor(tag.id)
 
-		seenRobots[idS] = tag
-		seenRobots[idS].robotTypeS = robotTypeS
-		seenRobots[idS].idS = idS
-		seenRobots[idS].id = nil
+			seenRobots[idS] = tag
+			seenRobots[idS].robotTypeS = robotTypeS
+			seenRobots[idS].idS = idS
+			seenRobots[idS].id = nil
+		end
+	end
+end
+
+function drone_add_obstacles(obstacles, tags)
+	for i, v in pairs(obstacles) do
+		obstacles[i] = nil
+	end
+	for i, tag in ipairs(tags) do
+		if tag.id == 60 then
+			obstacles[#obstacles + 1] = tag
+		end
 	end
 end
 

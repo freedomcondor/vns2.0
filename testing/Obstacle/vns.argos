@@ -40,7 +40,7 @@
         <wifi implementation="default" />
       </actuators>
       <sensors>
-        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" />
+        <drone_cameras_system implementation="default" show_frustum="true" show_tag_rays="true" show_led_rays="true"/>
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
@@ -83,9 +83,32 @@
       </entity>
     </distribute-->
     <drone id="drone0">
-      <body position="1,0,0" orientation="0,0,0"/>
+      <body position="-1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
+
+	<prototype id="obstacle1" movable="true">
+		<body position="0,0,0" orientation="0,0,0" />
+		<links ref="box">
+        	<link id="box" geometry="box" size="0.1, 0.1, 0.1" mass="0.001"
+			      position="0,0,0" orientation="0,0,0" />
+		</links>
+		<devices>
+			<!--
+			<directional_leds medium="directional_leds">
+				<directional_led color="red" radius="0.25" observable_angle="180"
+					anchor="box" position="0, 0, 0.1" orientation="0, 0, 0"/>
+			</directional_leds> 
+			-->
+			<leds medium="leds">
+				<led color="blue" anchor="box" radius="0.1" offset="0, -0.05, 0.1"/>
+			</leds>
+			<tags medium="tags">
+				<tag payload="60" side_length="0.05" observable_angle="180"
+				     anchor="box" position="0, 0, 0.12" orientation="0, 0, 0" />
+			</tags>
+		</devices>
+	</prototype> 
 
 	<!--
     <drone id="drone1">
@@ -123,6 +146,7 @@
 
     <!-- add pi-puck robots -->
 	<!--
+	-->
     <pipuck id="pipuck0">
       <body position="-3,0,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
@@ -137,7 +161,6 @@
       <body position="-1,1,0" orientation="90,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
-	-->
 
 	<!--
     <distribute>
