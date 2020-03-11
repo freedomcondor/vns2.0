@@ -14,33 +14,35 @@ local Allocator = {}
 
 function Allocator.create(vns)
 	vns.allocator = {}
+	vns.allocator.allocated_children = {}
+	vns.allocator.need = {}
+	vns.allocator.myLastSentNeed = {}
 end
 
 function Allocator.reset(vns)
 	vns.allocator = {}
-	vns.allocator.change = 0
+	vns.allocator.allocated_children = {}
+	vns.allocator.need = {}
+	vns.allocator.myLastSentNeed = {}
 end
 
 function Allocator.addChild(vns)
-	vns.allocator.change = 0
 end
 
-function Allocator.deleteChild(vns)
-	vns.allocator.change = 0
+function Allocator.deleteChild(vns, idS)
+	vns.allocator.allocated_children[idS] = nil
+	vns.allocator.need[idS] = nil
 end
 
 function Allocator.addParent(vns)
 	vns.Allocator.setMorphology(vns, nil)
-	vns.allocator.change = 0
 end
 
 function Allocator.deleteParent(vns)
 	vns.Allocator.setMorphology(vns, vns.allocator.gene)
-	vns.allocator.change = 0
 end
 
 function Allocator.setGene(vns, morph)
-	--if morph.robotTypeS ~= vns.robotTypeS then morph = {robotTypeS = vns.robotTypeS} end
 	if morph.robotTypeS ~= vns.robotTypeS then morph = nil return end
 	Allocator.calcMorphScale(vns, morph)
 	vns.allocator.gene = morph
@@ -49,330 +51,195 @@ end
 
 function Allocator.setMorphology(vns, morph)
 	vns.allocator.target = morph
+	Allocator.reset(vns)
+end
+
+function Allocator.reset(vns)
+	for idS, childR in pairs(vns.childrenRT) do
+		vns.Assigner.assign(vns, idS, nil)
+	end
+	vns.allocator.allocated_children = {}
+	if vns.allocator.target ~= nil and
+	   vns.allocator.target.children ~= nil then
+		for _, branchT in ipairs(vns.allocator.target.children) do
+			branchT.actorS = nil
+		end
+	end
 end
 
 function Allocator.step(vns)
 	-- receive branch
 	if vns.parentR ~= nil then for _, msgM in ipairs(vns.Msg.getAM(vns.parentR.idS, "branch")) do
 		Allocator.setMorphology(vns, msgM.dataT.target)
-		vns.allocator.change = 0
 	end end
 
-	if vns.allocator.change <= 0 then
-		Allocator.exe_allocate(vns)
-		vns.allocator.change = 10
-	else
-		vns.allocator.change = vns.allocator.change - 1
-	end
-
-	-- send cmd to children
-	for idS, robotR in pairs(vns.childrenRT) do
-		if robotR.allocate ~= nil then -- skip non-allocated children (this may happen if a child is newly recruited and haven't reported its scale)
-
-		if robotR.allocate.idS == nil then
-			-- it is a branch, send branch and disassign
-			if robotR.robotTypeS == robotR.allocate.robotTypeS then
-				vns.Msg.send(robotR.idS, "branch", {target = robotR.allocate})
-			else
-				vns.Msg.send(robotR.idS, "branch", {target = nil})
-			end
-			robotR.goalPoint = {
-				positionV3 = robotR.allocate.positionV3,
-				orientationQ = robotR.allocate.orientationQ,
-			}
-			---[[
-			if vns.goalPoint ~= nil then
-				robotR.goalPoint.positionV3 = vector3(robotR.goalPoint.positionV3):rotate(vns.goalPoint.orientationQ) +
-				                              vns.goalPoint.positionV3
-				robotR.goalPoint.orientationQ = robotR.goalPoint.orientationQ * vns.goalPoint.orientationQ
-			end
-			--]]
-			if robotR.assignTargetS ~= nil then
-				vns.Assigner.assign(vns, robotR.idS, nil)
-			end
-		else
-			-- it is a robot, assign
-			vns.Assigner.assign(vns, robotR.idS, robotR.allocate.idS)
-			vns.Msg.send(robotR.idS, "branch", {target = nil})
-		end
-	end end
-end
-
-function Allocator.exe_allocate(vns)
-	for idS, robotR in pairs(vns.childrenRT) do
-		robotR.allocate = nil
-	end
-
-	Allocator.allocate(vns, "drone")
-	Allocator.allocate(vns, "pipuck")
-	Allocator.allocate(vns, "builderbot")
-
-	-- now every children has a allocate
-	-- for each branch, 
+	-- allocate branch -- TODO: hungarian 
 	if vns.allocator.target ~= nil and vns.allocator.target.children ~= nil then
-		for index, branchR in ipairs(vns.allocator.target.children) do
-			-- find the farthest same type child allocated to it
-			--local dis = 0
-			local dis = math.huge
-			local theChild = nil
-			for idS, robotR in pairs(vns.childrenRT) do
-				if robotR.allocate == branchR and
-				   robotR.robotTypeS == branchR.robotTypeS then
-					--local relativeVector = robotR.positionV3 - branchR.positionV3
-					--local relativeVector = vector3(robotR.positionV3 - branchR.positionV3 * 0.5)
-					local relativeVector = vector3(robotR.positionV3)
-					relativeVector.y = relativeVector.y / 3 -- TODO
-					relativeVector.z = 0
-					--if relativeVector:length() > dis then
-					if relativeVector:length() < dis then
-						dis = relativeVector:length()
-						theChild = robotR
-					end
-				end
+		for _, branchT in ipairs(vns.allocator.target.children) do
+			-- some branch is lost
+			if branchT.actorS ~= nil and
+			   vns.childrenRT[branchT.actorS] == nil then
+				branchT.actorS = nil
 			end
 
-			if theChild ~= nil then
-				-- assign other children (all type) to this farthest child
-				for idS, robotR in pairs(vns.childrenRT) do
-					if robotR.allocate == branchR then
-						--if robotR ~= theChild then
-						if robotR.idS ~= theChild.idS then
-							robotR.allocate = theChild
+			-- some branch is not fulfilled
+			if branchT.actorS == nil then
+				-- try find the nearest child
+				local nearestId = nil
+				local nearestLen = 9999999
+				for idS, childVns in pairs(vns.childrenRT) do
+					if vns.allocator.allocated_children[idS] == nil and 
+					   childVns.robotTypeS == branchT.robotTypeS then
+						local len = (childVns.positionV3 - branchT.positionV3):length()
+						if len < nearestLen then
+							nearestLen = len
+							nearestId = idS
 						end
 					end
 				end
-			end
-		end
-	end
-end
 
-function Allocator.allocate(vns, allocating_type)
-	-- create sources from children
-	local i = 0
-	local sourceSum = 0
-	local sourceList = {}
-	for idS, robotR in pairs(vns.childrenRT) do
-		if robotR.scale[allocating_type] ~= nil and robotR.scale[allocating_type] ~= 0 and
-		   robotR.robotTypeS == allocating_type
-		then
-			i = i + 1
-			sourceList[i] = {
-				--number = robotR.scale[allocating_type],
-				number = 1,
-				index = robotR,
-			}
-			--sourceSum = sourceSum + robotR.scale[allocating_type]
-			sourceSum = sourceSum + 1
-		end
-	end
-	--[[
-	if vns.parentR ~= nil and vns.allocator.target ~= nil then
-		local parentHas = vns.parentR.scale - vns.allocator.target.parentScale
-		if parentHas[allocating_type] ~= nil and
-		   parentHas[allocating_type] > 0 then
-			i = i + 1
-			sourceList[i] = {
-				number = parentHas[allocating_type],
-				index = vns.parentR,
-			}
-			sourceSum = sourceSum + parentHas[allocating_type]
-		end
-	end
-	--]]
-
-	if #sourceList == 0 then return end
-	sourceList.sum = sourceSum
-
-	-- create targets from branch
-	local i = 0
-	local targetSum = 0
-	local targetList = {}
-	if vns.allocator.target ~= nil and vns.allocator.target.children ~= nil then
-		for _, branchR in ipairs(vns.allocator.target.children) do
-			if branchR.scale[allocating_type] ~= nil and branchR.scale[allocating_type] ~= 0 then
-				i = i + 1
-				targetList[i] = {
-					number = branchR.scale[allocating_type],
-					index = branchR
-				}
-				targetSum = targetSum + branchR.scale[allocating_type]
+				if nearestId ~= nil then
+					if vns.childrenRT[nearestId].assignTargetS ~= nil then
+						vns.Assigner.assign(vns, nearestId, nil)
+					end
+					branchT.actorS = nearestId 
+					vns.allocator.allocated_children[nearestId] = true
+					vns.childrenRT[nearestId].goalPoint = {
+						positionV3 = branchT.positionV3,
+						orientationQ = branchT.orientationQ,
+					}
+					vns.Msg.send(nearestId, "branch", {target = branchT})
+				end
 			end
 		end
 	end
 
-	--[[
-	if vns.parentR ~= nil and vns.allocator.target ~= nil then
-		local parentLack = vns.allocator.target.parentScale - vns.parentR.scale
-		if parentLack[allocating_type] ~= nil and
-		   parentLack[allocating_type] > 0 then
-			i = i + 1
-			targetList[i] = {
-				number = parentLack[allocating_type],
-				index = vns.parentR,
-			}
-			targetSum = targetSum + parentLack[allocating_type]
-		end
-	end
-	--]]
-
-	-- more children to parent
-	if sourceSum > targetSum then
-		i = i + 1
-		if vns.parentR ~= nil then
-			targetList[i] = {
-				number = sourceSum - targetSum,
-				index = vns.parentR,
-			}
-		else
-			targetList[i] = {
-				number = sourceSum - targetSum,
-				index = {positionV3 = vector3(), orientationQ = quaternion(),},
+	-- more children set rallypoint to 0
+	for idS, childVns in pairs(vns.childrenRT) do
+		if vns.allocator.allocated_children[idS] == nil and
+		   childVns.assignTargetS == nil then
+			childVns.goalPoint = {
+				positionV3 = vector3(),
+				orientationQ = quaternion(),
 			}
 		end
 	end
-	-- create a cost matrix
-	local originCost = {}
-	for i = 1, #sourceList do originCost[i] = {} end
-	for i = 1, #sourceList do
-		for j = 1, #targetList do
-			local targetPosition = vector3(targetList[j].index.positionV3)
-			--[[
-			if vns.goalPoint ~= nil then
-				targetPosition = targetPosition:rotate(vns.goalPoint.orientationQ) + vns.goalPoint.positionV3
-			end
-			--]]
-			local relativeVector = sourceList[i].index.positionV3 - targetPosition
-			relativeVector.z = 0
-			originCost[i][j] = relativeVector:length()
-			-- if the target is different type, allocate last -- TODO: DELETE
-			---[[
-			if targetList[j].index.robotTypeS ~= allocating_type then 
-				originCost[i][j] = originCost[i][j] + 5
-			end
-			--]]
+
+	-- need ----------------------------------------------------------------------
+	-- receive need
+	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "need")) do
+		if vns.childrenRT[msgM.fromS] ~= nil then
+			vns.allocator.need[msgM.fromS] = vns.ScaleManager.Scale:new(msgM.dataT)
 		end
 	end
 
-	GraphMatch(sourceList, targetList, originCost)
-
-	-- find the farthest to for each children
-	for i = 1, #sourceList do
-		if sourceList[i].index ~= vns.parentR then -- ignore the source from parent
-		if sourceList[i].index.robotTypeS == allocating_type then -- ignore the different type robot
-
-		local dis = 0
-		local maxT = nil
-		for j = 1, #sourceList[i].to do
-			local T = sourceList[i].to[j].target
-			if originCost[i][T] > dis then
-				dis = originCost[i][T]
-				maxT = T
+	local need = {}
+	if vns.allocator.target ~= nil and
+	   vns.allocator.target.children ~= nil then
+		for idS, childVns in pairs(vns.childrenRT) do
+			need[idS] = vns.ScaleManager.Scale:new(vns.allocator.need[idS])
+			-- count already assigned robots
+			for idSmore, childVnsmore in pairs(vns.childrenRT) do
+				if childVnsmore.assignTargetS == idS then
+					-- idSmore is a more robot assigned to idS
+					if need[idS][childVnsmore.robotTypeS] ~= nil and need[idS][childVnsmore.robotTypeS] > 0 then
+						need[idS][childVnsmore.robotTypeS] =
+						need[idS][childVnsmore.robotTypeS] - 1
+					else
+						--self:unsign(idSmore, vns)
+						vns.Assigner.assign(vns, idSmore, nil)
+					end
+				end
 			end
-		end
 
-		sourceList[i].index.allocate = targetList[maxT].index
-	end end end
-
-	--[[
-	DMSG("source list")
-	DMSG(sourceList, 1, "children")
-	DMSG("target list")
-	DMSG(targetList, 1, "children")
-	--]]
-end
-
--------------------------------------------------------------------------------
-function GraphMatch(sourceList, targetList, originCost)
-	--DMSG("originCost")
-	--DMSG(originCost)
-	-- create a enhanced cost matrix
-	-- and orderlist, to sort everything in originCost
-	local orderList = {}
-	local count = 0
-	for i = 1, #sourceList do
-		for j = 1, #targetList do
-			count = count + 1
-			orderList[count] = originCost[i][j]
-		end
+			-- assign more robots
+			for idSmore, childVnsmore in pairs(vns.childrenRT) do
+				if need[idS][childVnsmore.robotTypeS] ~= nil and need[idS][childVnsmore.robotTypeS] > 0 then
+					if vns.allocator.allocated_children[idSmore] == nil and 
+					   childVnsmore.assignTargetS == nil then
+						vns.Assigner.assign(vns, idSmore, idS)
+						--self:assign(idSmore, idS, vns)
+						need[idS][childVnsmore.robotTypeS] =
+						need[idS][childVnsmore.robotTypeS] - 1
+					end
+				end
+			end
+		end 
 	end
 
-	-- sort orderlist
-	for i = 1, #orderList - 1 do
-		for j = i + 1, #orderList do
-			if orderList[i] > orderList[j] then
-				local temp = orderList[i]
-				orderList[i] = orderList[j]
-				orderList[j] = temp
+	-- count unallocated branches
+	local unAllocatedBranchTN = vns.ScaleManager.Scale:new()
+	if vns.allocator.target ~= nil and
+	   vns.allocator.target.children ~= nil then
+		for _, branchT in ipairs(vns.allocator.target.children) do
+			if branchT.actorS == nil then
+				if unAllocatedBranchTN[branchT.robotTypeS] == nil then
+					unAllocatedBranchTN[branchT.robotTypeS] = 0 end
+				unAllocatedBranchTN[branchT.robotTypeS] = 
+					unAllocatedBranchTN[branchT.robotTypeS] + 1
 			end
 		end
 	end
 
-	-- create a reverse index
-	local reverseIndex = {}
-	for i = 1, #orderList do reverseIndex[orderList[i]] = i end
-	-- create an enhanced cost matrix
-	local cost = {}
-	for i = 1, #sourceList do
-		cost[i] = {}
-		for j = 1, #targetList do
-			--cost[i][j] = (#orderList) ^ reverseIndex[originCost[i][j]]
-			cost[i][j] = (sourceList.sum + 1) ^ reverseIndex[originCost[i][j]]
+	--print("branch count")
+	--showTable(unAllocatedBranchTN)
+
+	-- count more robots
+	local moreRobotsTN = vns.ScaleManager.Scale:new()
+	for idS, childVns in pairs(vns.childrenRT) do
+		if vns.allocator.allocated_children[idS] == nil and 
+		   childVns.assignTargetS == nil then
+			if moreRobotsTN[childVns.robotTypeS] == nil then
+				moreRobotsTN[childVns.robotTypeS] = 0 end
+			moreRobotsTN[childVns.robotTypeS] = 
+				moreRobotsTN[childVns.robotTypeS] - 1
 		end
 	end
 
-	--DMSG("cost")
-	--DMSG(cost)
+	--print("more robot")
+	--showTable(moreRobotsTN)
 
-	-- create a flow network
-	local C = {}
-	local n = 1 + #sourceList + #targetList + 1
-	for i = 1, n do C[i] = {} end
-	-- 1, start
-	-- 2 to #sourceList+1  source
-	-- #sourceList+2 to #sourceList + #targetList + 1  target
-	-- #sourceList + #target + 2   end
-	for i = 1, #sourceList do
-		C[1][1 + i] = sourceList[i].number
-	end
-	for i = 1, #targetList do
-		C[#sourceList+1 + i][n] = targetList[i].number
-	end
-	for i = 1, #sourceList do
-		for j = 1, #targetList do
-			C[1 + i][#sourceList+1 + j] = math.huge
-		end
-	end
-	
-	local W = {}
-	local n = 1 + #sourceList + #targetList + 1
-	for i = 1, n do W[i] = {} end
-
-	for i = 1, #sourceList do
-		W[1][1 + i] = 0
-	end
-	for i = 1, #targetList do
-		W[#sourceList+1 + i][n] = 0
-	end
-	for i = 1, #sourceList do
-		for j = 1, #targetList do
-			W[1 + i][#sourceList+1 + j] = cost[i][j]
+	-- add children needs
+	local totalNeedTN = vns.ScaleManager.Scale:new()
+	for idS, childVns in pairs(vns.childrenRT) do
+		if need[idS] ~= nil then
+			totalNeedTN = totalNeedTN + need[idS]
 		end
 	end
 
-	local F = MinCostFlowNetwork(C, W)
+	if vns.parentR ~= nil and need[vns.parentR.idS] ~= nil then
+		totalNeedTN = totalNeedTN + need[vns.parentS]
+	end
 
-	for i = 1, #sourceList do
-		sourceList[i].to = {}
-		local count = 0
-		for j = 1, #targetList do
-			if F[1 + i][#sourceList+1 + j] ~= nil and
-			   F[1 + i][#sourceList+1 + j] ~= 0 then
-				count = count + 1
-				sourceList[i].to[count] = {
-					number = F[1 + i][#sourceList+1 + j],
-					target = j,
-				}
+	totalNeedTN = totalNeedTN + unAllocatedBranchTN
+	totalNeedTN = totalNeedTN + moreRobotsTN
+
+	--print("total need")
+	--showTable(totalNeedTN)
+
+	-- send need to parent
+	if vns.parentR ~= nil then
+		local needForParent = totalNeedTN + vns.allocator.need[vns.parentS]
+		for idS, childVns in pairs(vns.childrenRT) do
+			if vns.allocator.allocated_children[idS] == nil and 
+		   	   childVns.assignTargetS == vns.parentS then
+				needForParent[childVns.robotTypeS] = 
+					needForParent[childVns.robotTypeS] - 1
 			end
+		end
+
+		if needForParent ~= vns.allocator.myLastSentNeed[vns.parentR.idS] then
+			vns.Msg.send(vns.parentR.idS, "need", needForParent)
+			vns.allocator.myLastSentNeed[vns.parentR.idS] = needForParent
+		end
+	end
+
+	-- assign more to parent
+	for idS, childVns in pairs(vns.childrenRT) do
+		if vns.allocator.allocated_children[idS] == nil and
+		   childVns.assignTargetS == nil and
+		   vns.parentR ~= nil then
+			vns.Assigner.assign(vns, idS, vns.parentR.idS)
 		end
 	end
 end
