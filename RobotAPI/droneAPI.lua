@@ -101,7 +101,7 @@ function drone_add_obstacles(obstacles, tags)
 		obstacles[i] = nil
 	end
 	for i, tag in ipairs(tags) do
-		if tag.id == 60 then
+		if tag.id == 60 or tag.id == 61 then
 			obstacles[#obstacles + 1] = tag
 		end
 	end

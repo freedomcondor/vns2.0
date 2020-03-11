@@ -7,11 +7,31 @@ function Spreader.create(vns)
 	vns.spreader.spreading_speed = {positionV3 = vector3(), orientationV3 = vector3()}
 end
 
-function Spreader.step(vns, surpress_or_not)
+function Spreader.prestep(vns)
 	local chillRate = 0.1
 	vns.spreader.spreading_speed.positionV3 = vns.spreader.spreading_speed.positionV3 * chillRate
 	vns.spreader.spreading_speed.orientationV3 = vns.spreader.spreading_speed.orientationV3 * chillRate
+end
 
+function Spreader.emergency(vns, transV3, rotateV3)
+	vns.spreader.spreading_speed.positionV3 = vns.spreader.spreading_speed.positionV3 + transV3
+	vns.spreader.spreading_speed.orientationV3 = vns.spreader.spreading_speed.orientationV3 + rotateV3
+
+	-- message from children, send to parent
+	if vns.parentR ~= nil then
+		vns.Msg.send(vns.parentR.idS, "emergency", {
+			transV3 = transV3, rotateV3 = rotateV3,
+		})
+	end
+
+	for idS, childR in pairs(vns.childrenRT) do
+		vns.Msg.send(idS, "emergency", {
+			transV3 = transV3, rotateV3 = rotateV3,
+		})
+	end
+end
+
+function Spreader.step(vns, surpress_or_not)
 	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "emergency")) do
 		if vns.childrenRT[msgM.fromS] ~= nil or 
 		   vns.parentR ~= nil and vns.parentR.idS == msgM.fromS then -- else continue
