@@ -2,6 +2,13 @@
 ------------------------------------------------------
 local Driver = {}
 
+function Driver.create(vns)
+	vns.goalSpeed = {
+		positionV3 = vector3(),
+		orientationV3 = vector3(),
+	}
+end
+
 function Driver.addChild(vns, robotR)
 	robotR.goalSpeed = {
 		positionV3 = vector3(),
@@ -10,6 +17,10 @@ function Driver.addChild(vns, robotR)
 end
 
 function Driver.prestep(vns)
+	vns.goalSpeed = {
+		positionV3 = vector3(),
+		orientationV3 = vector3(),
+	}
 	for idS, childR in pairs(vns.childrenRT) do
 		childR.goalSpeed = {
 			positionV3 = vector3(),
@@ -33,6 +44,13 @@ function Driver.step(vns)
 			--	}
 			local transV3 = msgM.dataT.transV3:rotate(vns.parentR.orientationQ)
 			local rotateV3 = msgM.dataT.rotateV3:rotate(vns.parentR.orientationQ)
+
+			self_transV3 = transV3
+			self_rotateV3 = rotateV3
+
+			transV3 = transV3 + vns.goalSpeed.positionV3
+			rotateV3 = rotateV3 + vns.goalSpeed.orientationV3
+
 			--[[
 			vns.goalPoint = {
 				positionV3 = msgM.dataT.positionV3:rotate(vns.parentR.orientationQ) + 
@@ -41,9 +59,17 @@ function Driver.step(vns)
 			}
 			--]]
 			Driver.move(transV3, rotateV3)
-			self_transV3 = transV3
-			self_rotateV3 = rotateV3
 		end
+	else
+		local transV3 = vector3()
+		local rotateV3 = vector3()
+		self_transV3 = transV3 
+		self_rotateV3 = rotateV3
+
+		transV3 = transV3 + vns.goalSpeed.positionV3
+		rotateV3 = rotateV3 + vns.goalSpeed.orientationV3
+
+		Driver.move(transV3, rotateV3)
 	end
 
 	-- send drive to children

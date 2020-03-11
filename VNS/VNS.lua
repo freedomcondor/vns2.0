@@ -12,6 +12,7 @@ VNS.Assigner = require("Assigner")
 VNS.Allocator = require("Allocator_for_old_vns")
 VNS.ScaleManager = require("ScaleManager")
 VNS.Avoider = require("Avoider")
+VNS.Spreader = require("Spreader")
 VNS.Driver= require("Driver")
 
 VNS.Modules = {
@@ -24,6 +25,7 @@ VNS.Modules = {
 	VNS.Assigner,
 	VNS.Allocator,
 	VNS.Avoider,
+	VNS.Spreader,
 	VNS.Driver,
 }
 
@@ -78,9 +80,6 @@ function VNS.reset(vns)
 end
 
 function VNS.prestep(vns)
-	if vns.robotTypeS ~= "builderbot" then
-		if vns.parentR == nil then vns.Driver.move(vector3(), vector3()) end
-	end
 	vns.Msg.prestep(vns)
 	for i, module in ipairs(VNS.Modules) do
 		if type(module.prestep) == "function" then
@@ -155,6 +154,7 @@ function VNS.create_vns_node_without_drive(vns)
 		vns.Assigner.create_assigner_node(vns),
 		vns.Allocator.create_allocator_node(vns),
 		vns.Avoider.create_avoider_node(vns),
+		vns.Spreader.create_spreader_node(vns),
 		--vns.Driver.create_driver_node(vns),
 	},}
 
