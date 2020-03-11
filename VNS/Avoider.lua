@@ -67,7 +67,13 @@ function Avoider.step(vns, surpress_or_not)
 				childR.goalSpeed.positionV3 + avoid_speed.positionV3
 		end
 	end
-
+	
+	-- avoid predator
+	for j, obstacle in ipairs(vns.avoider.obstacles) do
+		if obstacle.id == 60 then
+			vns.Spreader.emergency(vns, vector3(0.1, 0, 0), vector3()) -- TODO: run away from predator
+		end
+	end
 end
 
 function Avoider.add(myLocV3, obLocV3, accumulatorV3, threshold)

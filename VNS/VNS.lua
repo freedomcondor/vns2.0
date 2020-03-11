@@ -9,7 +9,7 @@ VNS.PipuckConnector = require("PipuckConnector")
 
 VNS.Assigner = require("Assigner")
 --VNS.Allocator = require("Allocator")
-VNS.Allocator = require("Allocator_for_old_vns")
+VNS.Allocator = require("Allocator")
 VNS.ScaleManager = require("ScaleManager")
 VNS.Avoider = require("Avoider")
 VNS.Spreader = require("Spreader")
