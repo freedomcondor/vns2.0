@@ -2,6 +2,11 @@
 ------------------------------------------------------
 local Avoider = {}
 
+function Avoider.create(vns)
+	vns.avoider = {}
+	vns.avoider.obstacles = {}
+end
+
 function Avoider.step(vns, surpress_or_not)
 	-- for each children avoid
 	for idS, childR in pairs(vns.childrenRT) do
@@ -14,14 +19,14 @@ function Avoider.step(vns, surpress_or_not)
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, vns.parentR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.50)
+				            	0.70)
 			end
 
 			-- avoid my self
 			avoid_speed.positionV3 =
 				Avoider.add(childR.positionV3, vector3(),
 				            avoid_speed.positionV3,
-				            0.50)
+				            0.70)
 
 			-- avoid children
 			for jidS, jchildR in pairs(vns.childrenRT) do
@@ -31,18 +36,27 @@ function Avoider.step(vns, surpress_or_not)
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, jchildR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.50)
+				            	0.70)
 			end end end
 		end
 
 		if childR.robotTypeS == "pipuck" then
+			-- avoid seen pipucks
 			for jidS, robotR in pairs(vns.connector.seenRobots) do
 				if robotR.robotTypeS == "pipuck" and jidS ~= idS then
 					avoid_speed.positionV3 =
 						Avoider.add(childR.positionV3, robotR.positionV3,
 									avoid_speed.positionV3,
-						            0.35)
+						            0.15)
 				end
+			end
+
+			-- avoid obstacles
+			for j, obstacle in ipairs(vns.avoider.obstacles) do
+				avoid_speed.positionV3 = 
+					Avoider.add(childR.positionV3, obstacle.positionV3,
+								avoid_speed.positionV3,
+					            0.30)
 			end
 		end
 
@@ -63,7 +77,7 @@ function Avoider.add(myLocV3, obLocV3, accumulatorV3, threshold)
 	local ans = accumulatorV3
 	if d < threshold then
 		dV3:normalize()
-		local transV3 = 0.05 / d * dV3
+		local transV3 = 0.015 / d * dV3
 		ans = ans + transV3
 	end
 	return ans
