@@ -46,6 +46,18 @@
       </sensors>
       <params script="testing/Obstacle/drone.lua" />
     </lua_controller>
+
+	<!-- Block Controller -->
+    <lua_controller id="block">
+      <actuators>
+        <directional_leds implementation="default" />
+        <radios implementation="default"/>
+      </actuators>
+      <sensors>
+        <radios implementation="default" show_rays="true"/>
+      </sensors>
+      <params script="testing/Obstacle/block.lua" />
+    </lua_controller>
   </controllers>
 
   <!-- ****************** -->
@@ -83,6 +95,7 @@
       </entity>
     </distribute-->
 
+	<!--
 	<prototype id="obstacle1" movable="true">
 		<body position="0,0,0" orientation="0,0,0" />
 		<links ref="box">
@@ -90,12 +103,6 @@
 			      position="0,0,0" orientation="0,0,0" />
 		</links>
 		<devices>
-			<!--
-			<directional_leds medium="directional_leds">
-				<directional_led color="red" radius="0.25" observable_angle="180"
-					anchor="box" position="0, 0, 0.1" orientation="0, 0, 0"/>
-			</directional_leds> 
-			-->
 			<leds medium="leds">
 				<led color="blue" anchor="box" radius="0.1" offset="0, -0.05, 0.1"/>
 			</leds>
@@ -105,10 +112,16 @@
 			</tags>
 		</devices>
 	</prototype> 
+	-->
+
+    <block id="block0" debug="false">
+      <body position="1,-0.5,0" orientation="0,0,0"/>
+      <controller config="block"/>
+    </block>
 
 	<!--
 	-->
-    <drone id="drone0">
+    <drone id="drone6">
       <body position="1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
@@ -188,6 +201,7 @@
     <directional_led id="directional_leds" index="grid" grid_size="20,20,20"/>
     <led id="leds" index="grid" grid_size="20,20,20" />
     <tag id="tags" index="grid" grid_size="20,20,20" />
+    <radio id="nfc" index="grid" grid_size="20,20,20" />
     <radio id="wifi" index="grid" grid_size="20,20,20" />
   </media>
 

@@ -1,12 +1,11 @@
 vim coding.sh -c "
-
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua
 
-	tabnew testing/BuilderBot/vns.argos
-	tabnew testing/BuilderBot/drone.lua
-	tabnew testing/BuilderBot/builderbot.lua
+	tabnew testing/Obstacle/vns.argos
+	tabnew testing/Obstacle/drone.lua
+	tabnew testing/Obstacle/builderbot.lua
 
 	tabnew VNS/VNS.lua
 
@@ -19,6 +18,10 @@ vim coding.sh -c "
 	tabnew VNS/ScaleManager.lua
 "
 <<COMMENT
+	tabnew testing/BuilderBot/vns.argos
+	tabnew testing/BuilderBot/drone.lua
+	tabnew testing/BuilderBot/builderbot.lua
+
 	tabnew testing/Allocate/vns.argos
 	tabnew testing/Allocate/drone.lua
 	tabnew testing/Allocate/pipuck.lua

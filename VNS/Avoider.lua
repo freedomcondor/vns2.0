@@ -70,7 +70,7 @@ function Avoider.step(vns, surpress_or_not)
 	
 	-- avoid predator
 	for j, obstacle in ipairs(vns.avoider.obstacles) do
-		if obstacle.id == 60 then
+		if obstacle.robotTypeS == "block" and obstacle.type == 2 then
 			vns.Spreader.emergency(vns, vector3(0.1, 0, 0), vector3()) -- TODO: run away from predator
 		end
 	end
