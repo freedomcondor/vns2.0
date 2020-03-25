@@ -23,6 +23,10 @@ vim coding.sh -c "
 	tabnew testing/BuilderBot/drone.lua
 	tabnew testing/BuilderBot/builderbot.lua
 
+	tabnew testing/Allocate/vns.argos
+	tabnew testing/Allocate/drone.lua
+	tabnew testing/Allocate/pipuck.lua
+
 	tabnew testing/ScaleManager/vns.argos
 	tabnew testing/ScaleManager/drone.lua
 	tabnew testing/ScaleManager/pipuck.lua

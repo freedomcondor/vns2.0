@@ -45,7 +45,32 @@ function drone_enable_cameras()
 	end 
 end
 
+function drone_detect_tags_leds()
+	-- takes tags in camera_frame_reference
+	local led_dis = 0.02 -- distance between leds to the center
+	local led_loc_for_tag = {
+	vector3(led_dis, 0, 0),
+	vector3(0, led_dis, 0),
+	vector3(-led_dis, 0, 0),
+	vector3(0, -led_dis, 0)
+	} -- from x+, counter-closewise
+
+	for _, camera in ipairs(robot.cameras_system) do
+		for _, tag in ipairs(camera.tags) do
+			tag.type = 0
+			for j, led_loc in ipairs(led_loc_for_tag) do
+				local led_loc_for_camera = vector3(led_loc):rotate(tag.orientation) + tag.position
+				local color_number = camera.detect_led(led_loc_for_camera)
+				if color_number ~= tag.type and color_number ~= 0 then
+					tag.type = color_number
+				end
+			end
+		end
+	end
+end
+
 function drone_detect_tags()
+	drone_detect_tags_leds()
 	local drone_offset = (quaternion(robot.flight_system.orientation.x, vector3(1,0,0)) *
 	                     quaternion(robot.flight_system.orientation.y, vector3(0,1,0))):inverse()
 	tags = {}
@@ -59,6 +84,7 @@ function drone_detect_tags()
 					--idS = "pipuck" .. math.floor(tag.id),
 					--idS = robotTypeS .. math.floor(tag.id),
 					id = tag.id,
+					type = tag.type,
 					positionV3 = (camera.transform.position + 
 					              vector3(tag.position):rotate(camera.transform.orientation)
 								 ):rotate(drone_offset),
@@ -77,7 +103,7 @@ function drone_clear_seenRobots(seenRobots)
 	end
 end
 
-function drone_add_seenRobots(seenRobots, tags)
+function drone_add_seenRobots(seenRobots, tags) -- tags is an array of R
 	for i, tag in ipairs(tags) do
 		local robotTypeS
 		if 0 == tag.id then robotTypeS = "block"
@@ -96,12 +122,13 @@ function drone_add_seenRobots(seenRobots, tags)
 	end
 end
 
-function drone_add_obstacles(obstacles, tags)
+function drone_add_obstacles(obstacles, tags) -- tags is an array of R
+
 	for i, v in pairs(obstacles) do
 		obstacles[i] = nil
 	end
 	for i, tag in ipairs(tags) do
-		if tag.id == 60 or tag.id == 61 then
+		if tag.robotTypeS == "block" then
 			obstacles[#obstacles + 1] = tag
 		end
 	end

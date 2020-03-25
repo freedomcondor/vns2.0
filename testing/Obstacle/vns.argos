@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="5" random_seed="12345" />
+    <experiment length="100" ticks_per_second="5" random_seed="12345" />
   </framework>
   
   <!-- *************** -->
@@ -18,6 +18,7 @@
       <actuators>
         <debug implementation="default">
           <interface id="draw" />
+          <interface id="loop_functions" />
         </debug>
         <pipuck_differential_drive implementation="default" />
         <wifi implementation="default" />
@@ -35,6 +36,7 @@
         <directional_leds implementation="default" />
         <debug implementation="default">
           <interface id="draw" />
+          <interface id="loop_functions" />
         </debug>
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
@@ -45,6 +47,18 @@
         <wifi implementation="default" />
       </sensors>
       <params script="testing/Obstacle/drone.lua" />
+    </lua_controller>
+
+	<!-- Block Controller -->
+    <lua_controller id="block">
+      <actuators>
+        <directional_leds implementation="default" />
+        <radios implementation="default"/>
+      </actuators>
+      <sensors>
+        <radios implementation="default" show_rays="true"/>
+      </sensors>
+      <params script="testing/Obstacle/block.lua" />
     </lua_controller>
   </controllers>
 
@@ -83,6 +97,7 @@
       </entity>
     </distribute-->
 
+	<!--
 	<prototype id="obstacle1" movable="true">
 		<body position="0,0,0" orientation="0,0,0" />
 		<links ref="box">
@@ -90,12 +105,6 @@
 			      position="0,0,0" orientation="0,0,0" />
 		</links>
 		<devices>
-			<!--
-			<directional_leds medium="directional_leds">
-				<directional_led color="red" radius="0.25" observable_angle="180"
-					anchor="box" position="0, 0, 0.1" orientation="0, 0, 0"/>
-			</directional_leds> 
-			-->
 			<leds medium="leds">
 				<led color="blue" anchor="box" radius="0.1" offset="0, -0.05, 0.1"/>
 			</leds>
@@ -105,10 +114,16 @@
 			</tags>
 		</devices>
 	</prototype> 
+	-->
+
+    <block id="block0" debug="false">
+      <body position="1,-0.5,0" orientation="0,0,0"/>
+      <controller config="block"/>
+    </block>
 
 	<!--
 	-->
-    <drone id="drone0">
+    <drone id="drone6">
       <body position="1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
@@ -188,17 +203,19 @@
     <directional_led id="directional_leds" index="grid" grid_size="20,20,20"/>
     <led id="leds" index="grid" grid_size="20,20,20" />
     <tag id="tags" index="grid" grid_size="20,20,20" />
+    <radio id="nfc" index="grid" grid_size="20,20,20" />
     <radio id="wifi" index="grid" grid_size="20,20,20" />
   </media>
 
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
+  <!--
   <visualization>
     <qt-opengl lua_editor="true" show_boundary="false">
 		<user_functions library="../argos3-vns2/build/qtopengl_user_functions/libvns_qtopengl_user_functions"
                       label="vns_qtopengl_user_functions" >
-         <!--camera_paths>
+         <camera_paths>
             <path duration="250">
               <start position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
               <end position=" 12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
@@ -231,7 +248,7 @@
               <start position="-12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
               <end position="0, -15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
             </path>
-         </camera_paths-->
+         </camera_paths>
       </user_functions>
       <camera>
         <placement idx="0" position="  0,  0, 20"  look_at="0,0,10"   lens_focal_length="50" up="1,0,0"/>
@@ -246,6 +263,7 @@
       </camera>
     </qt-opengl>
   </visualization>
+  -->
 
 
 </argos-configuration>
