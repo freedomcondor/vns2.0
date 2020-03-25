@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="5" random_seed="12345" />
+    <experiment length="100" ticks_per_second="5" random_seed="12345" />
   </framework>
   
   <!-- *************** -->
@@ -18,6 +18,7 @@
       <actuators>
         <debug implementation="default">
           <interface id="draw" />
+          <interface id="loop_functions" />
         </debug>
         <pipuck_differential_drive implementation="default" />
         <wifi implementation="default" />
@@ -35,6 +36,7 @@
         <directional_leds implementation="default" />
         <debug implementation="default">
           <interface id="draw" />
+          <interface id="loop_functions" />
         </debug>
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
@@ -208,11 +210,12 @@
   <!-- ****************** -->
   <!-- * Visualization * -->
   <!-- ****************** -->
+  <!--
   <visualization>
     <qt-opengl lua_editor="true" show_boundary="false">
 		<user_functions library="../argos3-vns2/build/qtopengl_user_functions/libvns_qtopengl_user_functions"
                       label="vns_qtopengl_user_functions" >
-         <!--camera_paths>
+         <camera_paths>
             <path duration="250">
               <start position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
               <end position=" 12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
@@ -245,7 +248,7 @@
               <start position="-12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
               <end position="0, -15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
             </path>
-         </camera_paths-->
+         </camera_paths>
       </user_functions>
       <camera>
         <placement idx="0" position="  0,  0, 20"  look_at="0,0,10"   lens_focal_length="50" up="1,0,0"/>
@@ -260,6 +263,7 @@
       </camera>
     </qt-opengl>
   </visualization>
+  -->
 
 
 </argos-configuration>
