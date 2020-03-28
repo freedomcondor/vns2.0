@@ -154,7 +154,7 @@ function Allocator.step(vns)
 
 			-- assign more robots
 			for idSmore, childVnsmore in pairs(vns.childrenRT) do
-				if need[idS][childVnsmore.robotTypeS] ~= nil and need[idS][childVnsmore.robotTypeS] > 0 then
+				if idS ~= idSmore and need[idS][childVnsmore.robotTypeS] ~= nil and need[idS][childVnsmore.robotTypeS] > 0 then
 					if vns.allocator.allocated_children[idSmore] == nil and 
 					   childVnsmore.assignTargetS == nil then
 						vns.Assigner.assign(vns, idSmore, idS)

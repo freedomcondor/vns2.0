@@ -31,7 +31,8 @@ function drone_set_speed(x, y, z, th)
 end
 
 function drone_move(transV3, rotateV3)
-	local scaleN = 1.5
+	--local scaleN = 1.5
+	local scaleN = 1.0
 	local x = transV3.x * scaleN
 	local y = transV3.y * scaleN
 	local w = rotateV3:length()

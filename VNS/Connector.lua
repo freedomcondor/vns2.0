@@ -24,7 +24,9 @@ function Connector.prestep(vns)
 end
 
 function Connector.recruit(vns, robotR)
-	local numberN = math.random()
+	--local numberN = math.random()
+	--local numberN = string.sub(vns.idS, string.find(vns.idS, "%d"))
+	local numberN = robot.random.uniform()
 
 	local scaleN = 0
 	if vns.scale ~= nil then scaleN = vns.scale:totalNumber() end
@@ -164,6 +166,14 @@ function Connector.step(vns)
 			vns.connector.waitingRobots[msgM.fromS].numberN = nil
 			vns.addChild(vns, vns.connector.waitingRobots[msgM.fromS])
 			vns.connector.waitingRobots[msgM.fromS] = nil
+
+			local max = 0
+			for idS, robotR in pairs(vns.childrenRT) do
+				if robotR.scale:totalNumber() > max then
+					max = robotR.scale:totalNumber()
+				end
+			end
+			vns.connector.brainSwitchCount = max + 2
 		end
 	end
 
@@ -204,6 +214,7 @@ end
 
 function Connector.recruitAll(vns)
 	if vns.connector.brainSwitchCount ~= 0 then return end
+	if vns.robotTypeS == "pipuck" then return end
 	-- recruit new
 	for idS, robotR in pairs(vns.connector.seenRobots) do
 		if vns.childrenRT[idS] == nil and 

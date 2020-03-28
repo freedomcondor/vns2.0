@@ -170,7 +170,7 @@ function init()
 end
 
 function step()
-	robot.debug.loop_functions("\"string from drone.lua\"")
+	robot.debug.loop_functions("1234")
 
 	-- check height
 	if drone_check_height(1.5) == false then drone_set_height(1.5) end

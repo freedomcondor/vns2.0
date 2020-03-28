@@ -1,7 +1,7 @@
 vim coding.sh -c "
-	tabnew testing/Obstacle/vns.argos
-	tabnew testing/Obstacle/drone.lua
-	tabnew testing/Obstacle/pipuck.lua
+	tabnew data/test1/vns.argos
+	tabnew data/test1/drone.lua
+	tabnew data/test1/pipuck.lua
 
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua
@@ -14,11 +14,14 @@ vim coding.sh -c "
 
 	tabnew VNS/Assigner.lua
 
-	tabnew VNS/Allocator_for_old_vns.lua
 	tabnew VNS/ScaleManager.lua
 	tabnew VNS/Avoider.lua
 "
 <<COMMENT
+	tabnew testing/Obstacle/vns.argos
+	tabnew testing/Obstacle/drone.lua
+	tabnew testing/Obstacle/pipuck.lua
+
 	tabnew testing/BuilderBot/vns.argos
 	tabnew testing/BuilderBot/drone.lua
 	tabnew testing/BuilderBot/builderbot.lua
