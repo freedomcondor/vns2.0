@@ -13,20 +13,21 @@ function Avoider.step(vns, surpress_or_not)
 		local avoid_speed = {positionV3 = vector3(), orientationV3 = vector3()}
 		--childVns.avoiderSpeed.locV3 = Vec3:create()
 
+		local drone_range = 0.30
 		if childR.robotTypeS == "drone" then
 			-- avoid my parent
 			if vns.parentR ~= nil then
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, vns.parentR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.47)
+				            	drone_range)
 			end
 
 			-- avoid my self
 			avoid_speed.positionV3 =
 				Avoider.add(childR.positionV3, vector3(),
 				            avoid_speed.positionV3,
-				            0.47)
+				            drone_range)
 
 			-- avoid children
 			for jidS, jchildR in pairs(vns.childrenRT) do
@@ -36,7 +37,7 @@ function Avoider.step(vns, surpress_or_not)
 				avoid_speed.positionV3 =
 					Avoider.add(childR.positionV3, jchildR.positionV3,
 				            	avoid_speed.positionV3,
-				            	0.47)
+				            	drone_range)
 			end end end
 		end
 
@@ -83,7 +84,7 @@ function Avoider.add(myLocV3, obLocV3, accumulatorV3, threshold)
 	local ans = accumulatorV3
 	if d < threshold then
 		dV3:normalize()
-		local transV3 = 0.050 / d / d * dV3
+		local transV3 = 0.010 / d / d * dV3
 		ans = ans + transV3
 	end
 	return ans

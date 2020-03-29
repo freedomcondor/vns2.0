@@ -1,0 +1,197 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <system threads="0"/>
+    <experiment length="500" ticks_per_second="5" random_seed="97" />
+  </framework>
+  
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+     <!-- Pi-Puck Controller -->
+    <lua_controller id="pipuck">
+      <actuators>
+        <debug implementation="default">
+          <interface id="draw" />
+          <interface id="loop_functions" />
+        </debug>
+        <pipuck_differential_drive implementation="default" />
+        <wifi implementation="default" />
+      </actuators>
+      <sensors>
+        <pipuck_differential_drive implementation="default" />
+        <pipuck_rangefinders implementation="default" show_rays="false" />
+        <wifi implementation="default" show_rays="false" />
+      </sensors>
+      <params script="data/test1/pipuck.lua" />
+    </lua_controller>
+     <!-- Drone Controller -->
+    <lua_controller id="drone">
+      <actuators>
+        <directional_leds implementation="default" />
+        <debug implementation="default">
+          <interface id="draw" />
+          <interface id="loop_functions" />
+        </debug>
+        <drone_flight_system implementation="default" />
+        <wifi implementation="default" />
+      </actuators>
+      <sensors>
+        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" show_led_rays="false"/>
+        <drone_flight_system implementation="default" />
+        <wifi implementation="default" />
+      </sensors>
+      <params script="data/test1/drone.lua" />
+    </lua_controller>
+
+	<!-- Block Controller -->
+    <lua_controller id="block">
+      <actuators>
+        <directional_leds implementation="default" />
+        <radios implementation="default"/>
+      </actuators>
+      <sensors>
+        <radios implementation="default" show_rays="true"/>
+      </sensors>
+      <params script="testing/Obstacle/block.lua" />
+    </lua_controller>
+  </controllers>
+
+  <!-- ****************** -->
+  <!-- * Loop functions * -->
+  <!-- ****************** -->
+  <loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
+                  label="vns_loop_functions"/>
+
+  <!-- *********************** -->
+  <!-- * Arena configuration * -->
+  <!-- *********************** -->
+  <arena size="10, 10, 2.5" center="0, 0, 1">
+    <floor id="floor" source="loop_functions" pixels_per_meter="1" />
+    <!-- add the arena walls -->
+    <box id="north" size="0.05,9.95,0.1" movable="false">
+      <body position="4.975,0.025,0"  orientation="0,0,0" />
+    </box>
+    <box id="east" size="9.95,0.05,0.1" movable="false">
+      <body position="0.025,-4.975,0"  orientation="0,0,0" />
+    </box>
+    <box id="south" size="0.05,9.95,0.1" movable="false">
+      <body position="-4.975,-0.025,0"  orientation="0,0,0" />
+    </box>
+    <box id="west" size="9.95,0.05,0.1" movable="false">
+      <body position="-0.025,4.975,0"  orientation="0,0,0" />
+    </box>
+
+    <!-- add drones -->
+    <distribute>
+      <position method="uniform" min="0,-1.0,0" max="2.0,1.0,0" />
+      <orientation method="uniform" min="0,0,0" max="0,0,0" />
+      <entity quantity="6" base_num="1" max_trials="100">
+
+        <drone id="drone">
+          <body position="-1,1,0" orientation="0,0,0"/>
+          <controller config="drone"/>
+        </drone>
+
+      </entity>
+    </distribute>
+
+    <!-- add pi-puck robots -->
+    <distribute>
+      <position method="uniform" min="0,-1.0,0" max="2.0,1.0,0" />
+      <orientation method="uniform" min="0,0,0" max="360,0,0" />
+      <entity quantity="14" base_num="1" max_trials="100">
+        <pipuck id="pipuck">
+          <controller config="pipuck"/>
+        </pipuck>
+      </entity>
+    </distribute>
+  </arena>
+
+  <!-- ******************* -->
+  <!-- * Physics engines * -->
+  <!-- ******************* -->
+  <physics_engines>
+    <pointmass3d id="pm3d" iterations="10" />
+    <dynamics3d id="dyn3d" iterations="25" default_friction="0.3">
+      <gravity g="9.8" />
+      <floor friction="0.3" />
+      <virtual_magnetism />
+    </dynamics3d>
+  </physics_engines>
+
+  <!-- ********* -->
+  <!-- * Media * -->
+  <!-- ********* -->
+  <media>
+    <directional_led id="directional_leds" index="grid" grid_size="20,20,20"/>
+    <led id="leds" index="grid" grid_size="20,20,20" />
+    <tag id="tags" index="grid" grid_size="20,20,20" />
+    <radio id="nfc" index="grid" grid_size="20,20,20" />
+    <radio id="wifi" index="grid" grid_size="20,20,20" />
+  </media>
+
+  <!-- ****************** -->
+  <!-- * Visualization * -->
+  <!-- ****************** -->
+<!--
+  <visualization>
+    <qt-opengl lua_editor="true" show_boundary="false">
+		<user_functions library="../argos3-vns2/build/qtopengl_user_functions/libvns_qtopengl_user_functions"
+                      label="vns_qtopengl_user_functions" >
+         <camera_paths>
+            <path duration="250">
+              <start position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+              <end position=" 12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+            </path>
+            <path duration="250">
+              <start position=" 12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+              <end position=" 15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+            </path>
+            <path duration="250">
+              <start position=" 15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+              <end position=" 12.5, 12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+            </path>
+            <path duration="250">
+              <start position=" 12.5, 12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+              <end position="  0, 15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+            </path>
+            <path duration="250">
+              <start position="  0, 15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+              <end position="-12.5, 12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+            </path>
+            <path duration="250">
+              <start position="-12.5, 12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+              <end position="-15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+            </path>
+            <path duration="250">
+              <start position="-15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+              <end position="-12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+            </path>
+            <path duration="250">
+              <start position="-12.5,-12.5, 10"  look_at="0,0,0.25" lens_focal_length="70" />
+              <end position="0, -15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+            </path>
+         </camera_paths>
+      </user_functions>
+      <camera>
+        <placement idx="0" position="  0,  0, 20"  look_at="0,0,10"   lens_focal_length="50" up="1,0,0"/>
+        <placement idx="1" position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+        <placement idx="2" position=" 15,-15, 10"  look_at="0,0,0.25" lens_focal_length="90" />
+        <placement idx="3" position=" 15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+        <placement idx="4" position=" 15, 15, 10"  look_at="0,0,0.25" lens_focal_length="90" />
+        <placement idx="5" position="  0, 15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+        <placement idx="6" position="-15, 15, 10"  look_at="0,0,0.25" lens_focal_length="90" />
+        <placement idx="7" position="-15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
+        <placement idx="8" position="-15,-15, 10"  look_at="0,0,0.25" lens_focal_length="90" />
+      </camera>
+    </qt-opengl>
+  </visualization>
+-->
+
+</argos-configuration>

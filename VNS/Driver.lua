@@ -7,6 +7,7 @@ function Driver.create(vns)
 		positionV3 = vector3(),
 		orientationV3 = vector3(),
 	}
+	vns.driver = {turn180 = nil}
 end
 
 function Driver.addChild(vns, robotR)
@@ -97,7 +98,15 @@ function Driver.step(vns)
 
 			local rotateQ = robotR.orientationQ:inverse() * robotR.goalPoint.orientationQ
 			local angle, axis = rotateQ:toangleaxis()
-			if angle > math.pi then angle = angle - math.pi * 2 end
+
+			-- 180 dead lock
+			if vns.driver.turn180 == nil and math.pi - 0.08 < angle and angle < math.pi + 0.08 then
+				vns.driver.turn180 = true
+			elseif vns.driver.turn180 == true and math.pi - 0.35 < angle and angle < math.pi + 0.35 then
+				vns.driver.turn180 = nil
+			end
+
+			if vns.driver.turn180 == nil and angle > math.pi then angle = angle - math.pi * 2; axis = -axis end
 			local goalPointRotateV3 = axis * angle
 
 			child_transV3 = goalPointTransV3

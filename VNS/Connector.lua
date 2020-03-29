@@ -190,7 +190,7 @@ function Connector.step(vns)
 	-- check new brain
 	for _, msgM in pairs(vns.Msg.getAM("ALLMSG", "newBrain")) do
 		if vns.parentR ~= nil and msgM.fromS == vns.parentR.idS then
-			if vns.idS == msgM.dataT.newBrainS then
+			if vns.idS == msgM.dataT.newBrainS or vns.childrenRT[msgM.dataT.newBrainS] ~= nil then
 				vns.deleteParent(vns)
 			else
 				vns.Connector.changeBrain(vns, msgM.dataT.newBrainS)
@@ -307,9 +307,9 @@ end
 ------ behaviour tree ---------------------------------------
 function Connector.create_connector_node(vns)
 	return function()
+		Connector.ackAll(vns)
 		Connector.step(vns)
 		Connector.recruitAll(vns)
-		Connector.ackAll(vns)
 	end
 end
 

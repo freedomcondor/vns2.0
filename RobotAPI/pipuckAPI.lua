@@ -17,6 +17,11 @@ function pipuck_move(transV3, rotateV3)
 	local forward = transV3.x * 0.25
 
 	local mem = forward
+
+	local angle = math.atan(transV3.y / transV3.x) * 180 / math.pi
+	local forward_threshold = 89
+	if angle > forward_threshold or angle < -forward_threshold then mem = 0 forward = 0 end
+
 	local smalllimit = 0.03
 	if 0 <= forward and forward < smalllimit then forward = smalllimit end
 	if 0 > forward and forward >-smalllimit then forward =-smalllimit end
