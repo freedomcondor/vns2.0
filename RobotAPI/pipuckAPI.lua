@@ -14,12 +14,14 @@ function pipuck_set_velocity(x, y)
 end
 
 function pipuck_move(transV3, rotateV3)
-	local forward = transV3.x * 0.25
+	local scaleN = tonumber(robot.params.move_scale or 0.25)
+	local forward = transV3.x * scaleN
 
 	local mem = forward
 
 	local angle = math.atan(transV3.y / transV3.x) * 180 / math.pi
 	local forward_threshold = 89
+	--local forward_threshold = 30
 	if angle > forward_threshold or angle < -forward_threshold then mem = 0 forward = 0 end
 
 	local smalllimit = 0.03

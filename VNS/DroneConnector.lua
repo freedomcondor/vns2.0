@@ -36,7 +36,9 @@ end
 function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
 	local quadR = nil
 	for _, robotR in pairs(yourVehiclesTR) do
-		if myVehiclesTR[robotR.idS] ~= nil then
+		if myVehiclesTR[robotR.idS] ~= nil and 
+		   myVehiclesTR[robotR.idS].robotTypeS == "pipuck"
+		then
 			myRobotR = myVehiclesTR[robotR.idS]
 			quadR = {
 				idS = idS,

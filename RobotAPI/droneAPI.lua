@@ -31,8 +31,7 @@ function drone_set_speed(x, y, z, th)
 end
 
 function drone_move(transV3, rotateV3)
-	--local scaleN = 1.5
-	local scaleN = 1.0
+	local scaleN = tonumber(robot.params.move_scale or 1.0)
 	local x = transV3.x * scaleN
 	local y = transV3.y * scaleN
 	local w = rotateV3:length()
@@ -79,18 +78,27 @@ function drone_detect_tags()
 	for _, camera in ipairs(robot.cameras_system) do
 		for _, tag in ipairs(camera.tags) do
 			-- check existed
-			if index[tag.id] == nil then --TODO: same id detect
+			local newtag = {
+				--idS = "pipuck" .. math.floor(tag.id),
+				--idS = robotTypeS .. math.floor(tag.id),
+				id = tag.id,
+				type = tag.type,
+				positionV3 = (camera.transform.position + 
+				              vector3(tag.position):rotate(camera.transform.orientation)
+							 ):rotate(drone_offset),
+				orientationQ = drone_offset * camera.transform.orientation * tag.orientation
+			}
+
+			local same = false
+			for j, oldtag in ipairs(tags) do
+				if (oldtag.positionV3 - newtag.positionV3):length() < 0.03 then
+					same = true
+					break
+				end
+			end
+			if same == false then
 				index[tag.id] = true
-				tags[#tags + 1] = {
-					--idS = "pipuck" .. math.floor(tag.id),
-					--idS = robotTypeS .. math.floor(tag.id),
-					id = tag.id,
-					type = tag.type,
-					positionV3 = (camera.transform.position + 
-					              vector3(tag.position):rotate(camera.transform.orientation)
-								 ):rotate(drone_offset),
-					orientationQ = drone_offset * camera.transform.orientation * tag.orientation
-				}
+				tags[#tags + 1] = newtag
 			end
 		end
 	end

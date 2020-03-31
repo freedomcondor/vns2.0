@@ -1,8 +1,4 @@
 vim coding.sh -c "
-	tabnew data/test1/vns.argos
-	tabnew data/test1/drone.lua
-	tabnew data/test1/pipuck.lua
-
 	tabnew RobotAPI/droneAPI.lua
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua
@@ -18,6 +14,10 @@ vim coding.sh -c "
 	tabnew VNS/Avoider.lua
 "
 <<COMMENT
+	tabnew data/test1/vns.argos
+	tabnew data/test1/drone.lua
+	tabnew data/test1/pipuck.lua
+
 	tabnew testing/Obstacle/vns.argos
 	tabnew testing/Obstacle/drone.lua
 	tabnew testing/Obstacle/pipuck.lua

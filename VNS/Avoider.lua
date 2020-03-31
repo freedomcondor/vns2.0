@@ -55,9 +55,14 @@ function Avoider.step(vns, surpress_or_not)
 			-- avoid obstacles
 			for j, obstacle in ipairs(vns.avoider.obstacles) do
 				avoid_speed.positionV3 = 
+					--[[
 					Avoider.add(childR.positionV3, obstacle.positionV3,
 								avoid_speed.positionV3,
-					            0.30)
+					            0.20)
+					--]]
+					Avoider.addObstacleForce(childR.positionV3, obstacle.positionV3,
+								avoid_speed.positionV3,
+					            0.15)
 			end
 		end
 
@@ -71,8 +76,8 @@ function Avoider.step(vns, surpress_or_not)
 	
 	-- avoid predator
 	for j, obstacle in ipairs(vns.avoider.obstacles) do
-		if obstacle.robotTypeS == "block" and obstacle.type == 2 then
-			vns.Spreader.emergency(vns, vector3(0.1, 0, 0), vector3()) -- TODO: run away from predator
+		if obstacle.robotTypeS == "block" and obstacle.type == 0 then
+			vns.Spreader.emergency(vns, vector3(0.02, 0, 0), vector3()) -- TODO: run away from predator
 		end
 	end
 end
@@ -90,6 +95,20 @@ function Avoider.add(myLocV3, obLocV3, accumulatorV3, threshold)
 	return ans
 end
 
+function Avoider.addObstacleForce(myLocV3, obLocV3, accumulatorV3, threshold)
+	local dV3 = myLocV3 - obLocV3
+	local d = dV3:length()
+	if d == 0 then return accumulatorV3 end
+	local ans = accumulatorV3
+	if d < threshold then
+		dV3:normalize()
+		local transV3 = 0.002 / d / d * dV3
+		--transV3 = transV3:rotate(quaternion(math.pi/2, vector3()))
+		transV3 = transV3:rotate(quaternion(0, vector3()))
+		ans = ans + transV3
+	end
+	return ans
+end
 
 function Avoider.create_avoider_node(vns)
 	return function()
