@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="5" random_seed="6" />
+    <experiment length="0" ticks_per_second="5" random_seed="4" />
   </framework>
   
   <!-- *************** -->
@@ -28,28 +28,9 @@
         <pipuck_rangefinders implementation="default" show_rays="false" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="data/obstacle1/pipuck.lua"
-		      move_scale = "0.05"
-	  />
+      <params script="data/displace/pipuck.lua" />
     </lua_controller>
-     <!-- Predator Controller -->
-    <lua_controller id="predator">
-      <actuators>
-        <debug implementation="default">
-          <interface id="draw" />
-          <interface id="loop_functions" />
-        </debug>
-        <pipuck_differential_drive implementation="default" />
-        <wifi implementation="default" />
-      </actuators>
-      <sensors>
-        <pipuck_differential_drive implementation="default" />
-        <pipuck_rangefinders implementation="default" show_rays="false" />
-        <wifi implementation="default" show_rays="false" />
-      </sensors>
-      <params script="data/obstacle1/predator.lua" />
-    </lua_controller>
- 
+
      <!-- Drone Controller -->
     <lua_controller id="drone">
       <actuators>
@@ -66,22 +47,7 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="data/obstacle1/drone.lua" 
-		      move_scale = "0.4"
-		      run_away_speed = "0.02"
-	  />
-    </lua_controller>
-
-	<!-- Block Controller -->
-    <lua_controller id="block">
-      <actuators>
-        <directional_leds implementation="default" />
-        <radios implementation="default"/>
-      </actuators>
-      <sensors>
-        <radios implementation="default" show_rays="true"/>
-      </sensors>
-      <params script="data/obstacle1/block.lua" />
+      <params script="data/displace/drone.lua" />
     </lua_controller>
   </controllers>
 
@@ -94,9 +60,10 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="10, 10, 2.5" center="0, 0, 1">
+  <arena size="15, 10, 2.5" center="0, 0, 1">
     <floor id="floor" source="loop_functions" pixels_per_meter="1" />
     <!-- add the arena walls -->
+	<!--
     <box id="north" size="0.05,9.95,0.1" movable="false">
       <body position="4.975,0.025,0"  orientation="0,0,0" />
     </box>
@@ -109,65 +76,95 @@
     <box id="west" size="9.95,0.05,0.1" movable="false">
       <body position="-0.025,4.975,0"  orientation="0,0,0" />
     </box>
+	-->
 
     <!-- add drones -->
     <drone id="drone1">
-      <body position="-1.0,0.1,0" orientation="0,0,0"/>
+      <body position="-1,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone2">
-      <body position="-2.0,0.1,0" orientation="0,0,0"/>
+      <body position="-2.0,0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
+    <drone id="drone3">
+      <body position="-2.0,1.0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
+    <drone id="drone4">
+      <body position="-2.0,-1.0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
+    <drone id="drone5">
+      <body position="-3.0,0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
+    <drone id="drone6">
+      <body position="-4.0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <pipuck id="pipuck1">
-      <body position="-0.5,0.6,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-0.5,-0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
     <pipuck id="pipuck2">
-      <body position="-0.5,-0.4,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-0.5,0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
     <pipuck id="pipuck3">
-      <body position="-1.5,0.6,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-1.5,-1.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
     <pipuck id="pipuck4">
-      <body position="-1.5,-0.4,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-1.5,-0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
     <pipuck id="pipuck5">
-      <body position="-2.5,0.6,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-1.5,0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
     <pipuck id="pipuck6">
-      <body position="-2.5,-0.4,0" orientation="0,0,0"/>
-      <controller config="pipuck"/>
+       <body position="-1.5,1.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
     </pipuck>
-
-    <!-- add blocks -->
-    <distribute>
-      <position method="uniform" min="0,-1.6,0" max="0.5,1.6,0" />
-      <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <entity quantity="15" base_num="1" max_trials="100">
-    	<block id="block" debug="false">
-      		<body position="1,-0.5,0" orientation="0,0,0"/>
-      		<controller config="block"/>
-    	</block>
-      </entity>
-    </distribute>
-
-  	<pipuck id="pipuck0">
-     	<body position="-3,0,0" orientation="0,0,0"/>
-     	<controller config="predator"/>
-  	</pipuck>
-
+    <pipuck id="pipuck7">
+       <body position="-2.5,-1.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck8">
+       <body position="-2.5,-0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck9">
+       <body position="-2.5,0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck10">
+       <body position="-2.5,1.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck11">
+       <body position="-3.5,-0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck12">
+       <body position="-3.5,0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck13">
+       <body position="-4.5,-0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
+    <pipuck id="pipuck14">
+       <body position="-4.5,0.5,0" orientation="0,0,0"/>
+       <controller config="pipuck"/>
+    </pipuck>
   </arena>
 
   <!-- ******************* -->
@@ -175,7 +172,7 @@
   <!-- ******************* -->
   <physics_engines>
     <pointmass3d id="pm3d" iterations="10" />
-    <dynamics3d id="dyn3d" iterations="50" default_friction="0.3">
+    <dynamics3d id="dyn3d" iterations="25" default_friction="0.3">
       <gravity g="9.8" />
       <floor friction="0.3" />
       <virtual_magnetism />
