@@ -132,6 +132,8 @@ DMSG.enable()
 obstacles = {}
 
 --local vns
+local stepcount
+
 function init()
 	linkDroneInterface(VNS)
 	drone_set_height(1.5)
@@ -139,10 +141,17 @@ function init()
 
 	vns = VNS.create("drone")
 	vns.setGene(vns, structure)
-	bt = BehaviorTree.create(VNS.create_vns_node(vns))
+	if robot.id == "drone1" then
+		bt = BehaviorTree.create(VNS.create_vns_node_without_ackAll(vns))
+	else
+		bt = BehaviorTree.create(VNS.create_vns_node(vns))
+	end
+	stepcount = 0
 end
 
 function step()
+	stepcount = stepcount + 1
+
 	if vns.allocator.target == nil then
 		robot.debug.loop_functions("-1")
 	else

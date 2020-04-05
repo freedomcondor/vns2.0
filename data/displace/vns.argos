@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="0" ticks_per_second="5" random_seed="4" />
+    <experiment length="0" ticks_per_second="5" random_seed="5" />
   </framework>
   
   <!-- *************** -->
@@ -80,89 +80,89 @@
 
     <!-- add drones -->
     <drone id="drone1">
-      <body position="-1,0,0" orientation="0,0,0"/>
+      <body position="0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone2">
-      <body position="-2.0,0,0" orientation="0,0,0"/>
+      <body position="-1.0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone3">
-      <body position="-2.0,1.0,0" orientation="0,0,0"/>
+      <body position="-0.5,0.5,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone4">
-      <body position="-2.0,-1.0,0" orientation="0,0,0"/>
+      <body position="-1.5,-0.5,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone5">
-      <body position="-3.0,0,0" orientation="0,0,0"/>
+      <body position="-2.0,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone6">
-      <body position="-4.0,0,0" orientation="0,0,0"/>
+      <body position="-2.5,0.5,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <pipuck id="pipuck1">
-       <body position="-0.5,-0.5,0" orientation="0,0,0"/>
+       <body position="0.5,-0.0,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck2">
-       <body position="-0.5,0.5,0" orientation="0,0,0"/>
+       <body position="0.5,0.5,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck3">
-       <body position="-1.5,-1.5,0" orientation="0,0,0"/>
+       <body position="-0.3,-0.7,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck4">
-       <body position="-1.5,-0.5,0" orientation="0,0,0"/>
+       <body position="-0.5,-0.5,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck5">
-       <body position="-1.5,0.5,0" orientation="0,0,0"/>
+       <body position="-0.5,0.0,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck6">
-       <body position="-1.5,1.5,0" orientation="0,0,0"/>
+       <body position="-0.5,0.7,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck7">
-       <body position="-2.5,-1.5,0" orientation="0,0,0"/>
+       <body position="-1.5,-0.7,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck8">
-       <body position="-2.5,-0.5,0" orientation="0,0,0"/>
+       <body position="-1.5,-0.3,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck9">
-       <body position="-2.5,0.5,0" orientation="0,0,0"/>
+       <body position="-1.5,0.0,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck10">
-       <body position="-2.5,1.5,0" orientation="0,0,0"/>
+       <body position="-1.5,0.7,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck11">
-       <body position="-3.5,-0.5,0" orientation="0,0,0"/>
+       <body position="-2.0,-0.0,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck12">
-       <body position="-3.5,0.5,0" orientation="0,0,0"/>
+       <body position="-2.0,0.3,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck13">
-       <body position="-4.5,-0.5,0" orientation="0,0,0"/>
+       <body position="-2.5,-0.0,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
     <pipuck id="pipuck14">
-       <body position="-4.5,0.5,0" orientation="0,0,0"/>
+       <body position="-2.5,0.3,0" orientation="0,0,0"/>
        <controller config="pipuck"/>
     </pipuck>
   </arena>

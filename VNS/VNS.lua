@@ -160,10 +160,52 @@ function VNS.create_vns_node_without_drive(vns)
 
 end
 
+function VNS.create_vns_node_without_drive_without_ackAll(vns)
+	local pre_connector_node
+	if vns.robotTypeS == "drone" then
+		pre_connector_node = {
+			type = "sequence", children = {
+			VNS.DroneConnector.create_droneconnector_node(vns),
+		}}
+	elseif vns.robotTypeS == "pipuck" then
+		pre_connector_node = {
+			type = "sequence", children = {
+			VNS.PipuckConnector.create_pipuckconnector_node(vns),
+		}}
+	elseif vns.robotTypeS == "builderbot" then
+		pre_connector_node = {
+			type = "sequence", children = {
+			VNS.PipuckConnector.create_pipuckconnector_node(vns),
+		}}
+	end
+
+	return 
+
+	{type = "sequence", children = {
+		pre_connector_node,
+		vns.Connector.create_connector_node_without_ackAll(vns),
+		vns.ScaleManager.create_scalemanager_node(vns),
+		vns.Assigner.create_assigner_node(vns),
+		vns.Allocator.create_allocator_node(vns),
+		vns.Avoider.create_avoider_node(vns),
+		vns.Spreader.create_spreader_node(vns),
+		--vns.Driver.create_driver_node(vns),
+	},}
+
+end
+
 function VNS.create_vns_node(vns)
 	return { 
 		type = "sequence", children = {
 		vns.create_vns_node_without_drive(vns),
+		vns.Driver.create_driver_node(vns),
+	},}
+end
+
+function VNS.create_vns_node_without_ackAll(vns)
+	return { 
+		type = "sequence", children = {
+		vns.create_vns_node_without_drive_without_ackAll(vns),
 		vns.Driver.create_driver_node(vns),
 	},}
 end
