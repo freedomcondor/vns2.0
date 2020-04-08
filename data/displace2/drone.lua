@@ -147,30 +147,67 @@ function init()
 		bt = BehaviorTree.create(VNS.create_vns_node(vns))
 	end
 	stepcount = 0
+
+	if robot.id == "drone1" then
+		local numberN = math.floor(robot.random.uniform(2, 7))
+		local file = io.open("displace_robot_name.txt", "w")
+		file:write("drone" .. tostring(numberN))
+		file:close()
+	end
 end
 
+local displace_robot_id
+local numberx, numbery
+local change_step = 1500
 function step()
 	stepcount = stepcount + 1
-	numberN = math.floor(robot.random.uniform(2, 7))
-	print(numberN)
-	if stepcount == 1500 then
-		local initial_position
-		if robot.id == "drone1" then initial_position = vector3(0, 0, 0)
-		elseif robot.id == "drone2" then initial_position = vector3(-1.0, 0, 0)
-		elseif robot.id == "drone3" then initial_position = vector3(-0.5, 0.5, 0)
-		elseif robot.id == "drone4" then initial_position = vector3(-1.5, -0.5, 0)
-		elseif robot.id == "drone5" then initial_position = vector3(-2.0, 0, 0)
-		elseif robot.id == "drone6" then initial_position = vector3(-2.5, 0.5, 0)
-		end
-		local numberx = robot.random.uniform(-3.7, 0.7)
-		local numbery = robot.random.uniform(-0.7, 0.7)
-		if (-1.7 < x_number) && (x_number < -0.3) then
-			numbery = robot.random.uniform(-1.7, 1.7)
-		end
+	local initial_position
+	if robot.id == "drone1" then initial_position = vector3(0, 0, 0)
+	elseif robot.id == "drone2" then initial_position = vector3(-1.0, 0, 0)
+	elseif robot.id == "drone3" then initial_position = vector3(-0.5, 0.5, 0)
+	elseif robot.id == "drone4" then initial_position = vector3(-1.5, -0.5, 0)
+	elseif robot.id == "drone5" then initial_position = vector3(-2.0, 0, 0)
+	elseif robot.id == "drone6" then initial_position = vector3(-2.5, 0.5, 0)
+	end
 
-		--robot.flight_system.position
+	if stepcount == change_step then
+		local file = io.open("displace_robot_name.txt", "r")
+		displace_robot_id = file:read()
+		file:close()
+
+		if robot.id == displace_robot_id then
+			numberx = robot.random.uniform(-2.0, 0.7)
+			numbery = robot.random.uniform(-0.7, 0.7)
+			if (-1.7 < numberx) and (numberx < -0.3) then
+				numbery = robot.random.uniform(-1.0, 1.0)
+			end
+
+			print(numberx, numbery)
+
+			file = io.open("distance.csv", "w")
+			local relative = vector3(numberx, numbery, 1.5) - 
+			                 robot.flight_system.position - initial_position
+			file:write(relative:length())
+			file:close()
+		end
+	end
+
+	if stepcount >= change_step and stepcount <= change_step + 50 and
+	   robot.id == displace_robot_id then
+		robot.flight_system.position = 
+			vector3(2, 0, 0) - initial_position
 		robot.flight_system.set_targets(
-			vector3(1, 0, 0) - initial_position
+			vector3(2, 0, 0) - initial_position,
+			robot.flight_system.orientation.z
+		)
+	end
+	if stepcount > change_step + 50 and stepcount <= change_step + 100 and
+	   robot.id == displace_robot_id then
+		robot.flight_system.position = 
+			vector3(numberx, numbery, 0) - initial_position
+		robot.flight_system.set_targets(
+			vector3(numberx, numbery, 0) - initial_position,
+			robot.flight_system.orientation.z
 		)
 	end
 

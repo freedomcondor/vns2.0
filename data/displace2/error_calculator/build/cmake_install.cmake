@@ -1,4 +1,4 @@
-# Install script for directory: /Users/harryzhu/Desktop/vns2.0/data/displace/error_calculator
+# Install script for directory: /Users/harryzhu/Desktop/vns2.0/data/displace2/error_calculator
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -29,7 +29,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/Users/harryzhu/Desktop/vns2.0/data/displace/error_calculator/build/simuGL/cmake_install.cmake")
+  include("/Users/harryzhu/Desktop/vns2.0/data/displace2/error_calculator/build/simuGL/cmake_install.cmake")
 
 endif()
 
@@ -41,5 +41,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/harryzhu/Desktop/vns2.0/data/displace/error_calculator/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/harryzhu/Desktop/vns2.0/data/displace2/error_calculator/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

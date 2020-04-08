@@ -1,4 +1,4 @@
-# Install script for directory: /Users/harryzhu/Desktop/vns2.0/data/displace/error_calculator/CVector
+# Install script for directory: /Users/harryzhu/Desktop/vns2.0/data/displace2/error_calculator/CVector
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

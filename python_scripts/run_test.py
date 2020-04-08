@@ -21,7 +21,7 @@ def generate_argos_file(i, len):
 os.system("mkdir data/" + testfolder + "/random")
 
 len = 2500
-test_number = 100
+test_number = 2
 
 #for i in range(83, 84):
 for i in range(1, test_number + 1):

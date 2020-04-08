@@ -6,5 +6,5 @@ CXX_FLAGS =  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacO
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/harryzhu/Desktop/vns2.0/data/displace/error_calculator/CVector 
+CXX_INCLUDES = -I/Users/harryzhu/Desktop/vns2.0/data/displace2/error_calculator/CVector 
 

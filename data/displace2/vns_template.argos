@@ -28,7 +28,7 @@
         <pipuck_rangefinders implementation="default" show_rays="false" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="data/displace/pipuck.lua" />
+      <params script="data/displace2/pipuck.lua" />
     </lua_controller>
 
      <!-- Drone Controller -->
@@ -47,7 +47,7 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="data/displace/drone.lua" />
+      <params script="data/displace2/drone.lua" />
     </lua_controller>
   </controllers>
 
