@@ -6,7 +6,7 @@
 #include "Quaternion.h"
 
 #define N_ROBOTS 8
-#define N_STEPS 11000
+#define N_STEPS 13000
 
 #define PI 3.1415926
 

@@ -237,7 +237,7 @@ function Connector.ackAll(vns)
 	   (
 	      vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() > vns.scale:totalNumber() or
 		  -- test
-	      vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() < vns.scale:totalNumber() or
+	      --vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() < vns.scale:totalNumber() or
 	      (
 	         vns.ScaleManager.Scale:new(msgM.dataT.scale):totalNumber() == 
 	                                                                   vns.scale:totalNumber() and

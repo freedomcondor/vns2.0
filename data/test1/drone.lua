@@ -170,19 +170,12 @@ function step()
 	end
 	--]]
 
-	---[[
+	--[[
 	for i, child in pairs(vns.childrenRT) do
 		drawArrow("blue", 
 			tostring(vector3(0,0,0)),
 			tostring(child.positionV3)
 		)
-
-		--[[
-		drawArrow("red", 
-			tostring(child.positionV3),
-			tostring(child.positionV3 + vector3(1,0,0):rotate(child.orientationQ))
-		)
-		--]]
 	end
 	--]]
 end

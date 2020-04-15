@@ -100,9 +100,18 @@ function step()
 	end
 	--]]
 
+	for _, obstacle in ipairs(vns.avoider.obstacles) do
+		if obstacle.robotTypeS == "block" and obstacle.type == 0 then	
+			vns.Msg.send("pipuck0", "predator_location", {
+						positionV3 = obstacle.positionV3,
+						orientationQ = obstacle.orientationQ,
+					})
+		end
+	end
+
 	---[[
 	for i, child in pairs(vns.childrenRT) do
-		drawArrow("blue", 
+		drawArrow("0,150,200,1", 
 			tostring(vector3(0,0,0)),
 			tostring(child.positionV3)
 		)

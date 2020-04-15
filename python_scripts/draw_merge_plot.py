@@ -22,8 +22,12 @@ def show_example_case():
 
 	plt.plot(data_vns[1:length], label="number of MNSs")
 	plt.plot(data_robots[1:length], label="number of robots in the bigget MNSs")
-	plt.xlabel("time")
-	plt.ylabel("number")
+#plt.plot(data_vns[1:length], label="           ")
+#	plt.plot(data_robots[1:length], label="            ")
+#plt.xlabel("time")
+#plt.ylabel("number")
+	plt.xticks([])
+	plt.yticks([])
 	plt.legend(loc="right")
 
 def show_all_case(file_to_read):
@@ -46,21 +50,24 @@ def show_all_case(file_to_read):
 	showdata = []
 	showindex = []
 	for i in range(1, divide + 1):
-		showindex.append((i-1) * length / divide)
-		showdata.append(data[length / divide * (i-1)])
+		showdata.append(data[1500 / divide * (i-1)])
 
 	plt.boxplot(showdata, showindex)
-	plt.xlabel("time")
-	plt.ylabel("number")
+#plt.xlabel("time")
+#plt.ylabel("number")
+	plt.xticks([])
+	plt.yticks([])
 
 
 #show_example_case()
 
 #plt.subplot("131")
 #show_example_case()
-plt.subplot("121")
-show_all_case("merge_robots_number.txt")
-plt.subplot("122")
+
+#plt.subplot("121")
+#show_all_case("merge_robots_number.txt")
+#plt.subplot("122")
 show_all_case("merge_vns_number.txt")
+plt.savefig('plot.pdf') 
 
 plt.show()

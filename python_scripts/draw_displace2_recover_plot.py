@@ -35,7 +35,6 @@ for i in range(1,test_number + 1):
 plt.subplot(122)
 plt.scatter(distance, time)
 
-
 data = []
 length = 3500
 
@@ -73,6 +72,8 @@ for i in range(30 * 1400 / 3500 , divide + 1):
 	showdata.append(data[length / divide * i - 1])
 
 plt.subplot(121)
-plt.boxplot(showdata, showindex)
+flierprops = dict(marker='.', markersize=2,
+			                  linestyle='none')
+plt.boxplot(showdata, flierprops = flierprops)
 plt.show()
 

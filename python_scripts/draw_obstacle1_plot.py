@@ -11,7 +11,7 @@ def readdata(testfolder, robot_file_name, plt):
 		data.append(float(line))
 	file.close()
 
-	plt.plot(data)
+	plt.plot(data[10:])
 
 folder = "obstacle1"
 readdata(folder, "drone2.txt", plt)
@@ -22,7 +22,10 @@ readdata(folder, "pipuck4.txt", plt)
 readdata(folder, "pipuck5.txt", plt)
 readdata(folder, "pipuck6.txt", plt)
 
-plt.xlabel("time")
-plt.ylabel("error of each robot")
+#plt.xlabel("time")
+#plt.ylabel("error of each robot")
+plt.xticks([])
+plt.yticks([])
+plt.savefig("plot.pdf")
 
 plt.show()

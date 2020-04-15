@@ -145,7 +145,7 @@
                       label="vns_qtopengl_user_functions" >
       </user_functions>
       <camera>
-        <placement idx="0" position="  0,  0, 20"  look_at="0,0,10"   lens_focal_length="50" up="1,0,0"/>
+        <placement idx="0" position="  0,  0, 10"  look_at="0,0,5"   lens_focal_length="50" up="1,0,0"/>
         <placement idx="1" position="  0,-15, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
         <placement idx="2" position=" 15,-15, 10"  look_at="0,0,0.25" lens_focal_length="90" />
         <placement idx="3" position=" 15,  0, 7.5" look_at="0,0,0.25" lens_focal_length="60" />
