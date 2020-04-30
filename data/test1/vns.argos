@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0"/>
-    <experiment length="500" ticks_per_second="5" random_seed="13" />
+    <experiment length="500" ticks_per_second="5" random_seed="3" />
   </framework>
   
   <!-- *************** -->
@@ -46,7 +46,10 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="data/test1/drone.lua" />
+      <params script="data/test1/drone.lua" 
+	          drone_range="0.4"
+			  obstacle_distance_level="1"
+			  obstacle_scale="0.1"/>
     </lua_controller>
 
 	<!-- Block Controller -->
