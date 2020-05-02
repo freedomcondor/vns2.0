@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<argos-configuration>
+
+  <!-- ************************* -->
+  <!-- * General configuration * -->
+  <!-- ************************* -->
+  <framework>
+    <experiment length="100" ticks_per_second="10" />
+    <script path="@CMAKE_BINARY_DIR@/testing/drone/cameras_system/start_stream.sh" arguments="6 4" event="pre_init"/>
+    <script path="@CMAKE_BINARY_DIR@/testing/drone/cameras_system/stop_stream.sh" event="post_destroy"/>
+  </framework>
+  
+  <!-- *************** -->
+  <!-- * Controllers * -->
+  <!-- *************** -->
+  <controllers>
+    <lua_controller id="drone">
+      <environment router="localhost:4950"/>
+      <actuators>
+        <wifi implementation="default" />
+      </actuators>
+      <sensors>
+        <drone_cameras_system implementation="default"
+          calibration="src/calibration/drone_camera_system.xml"
+          devices="6,7,8,9"
+          capture_resolution="1024,768"
+          processing_resolution="700,700"
+          processing_offset="162,34"
+          threads="1"/>
+        <drone_system implementation="default" />
+        <wifi implementation="default" />
+      </sensors>
+      <params script="@CMAKE_BINARY_DIR@/testing/drone/cameras_system/controller.lua" />
+    </lua_controller>
+  </controllers>
+
+</argos-configuration>
