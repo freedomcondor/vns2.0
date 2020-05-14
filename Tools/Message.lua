@@ -8,6 +8,8 @@
 -- 		upgrade message searching problem
 -- 	Version 3.0 :  
 -- 		for vns2.0, delete vector3 and quaternion
+-- 	Version 4.0 :  
+--		send only one message per step
 -----------------------------------------------------------
 local Message = {}
 
@@ -17,44 +19,69 @@ Message.list = {}
 	"cmdname" = {list}
 --]]
 
-function Message.prestep()
+Message.waitToSend = {}
+--[[
+	"destiny name" = {
+		1 = {}
+		2 = {}
+	}
+--]]
+
+function Message.preStep()
+	Message.waitToSend = {}
 	Message.list = {}
+	Message.arrange()
+end
+
+function Message.postStep()
+	for toIDS, list in pairs(Message.waitToSend) do
+		Message.sendTable{
+			toS = toIDS,
+			fromS = Message.myIDS(),
+			message = list,
+		}
+	end
+end
+
+function Message.prestep()
+	Message.arrange()
 end
 
 function Message.arrange()
-	for iN, msgM in ipairs(Message.getTablesAT()) do
-		if msgM.toS == Message.myIDS() or msgM.toS == "ALLMSG" then
-			local i = #Message.list + 1
-			Message.list[i] = msgM
-			if Message.list[msgM.cmdS] == nil then
-				Message.list[msgM.cmdS] = {}
+	for iN, msgArray in ipairs(Message.getTablesAT()) do
+		if msgArray.toS == Message.myIDS() or msgArray.toS == "ALLMSG" then
+			for jN, msgM in ipairs(msgArray.message) do
+				msgM.fromS = msgArray.fromS
+				msgM.ToS = msgArray.toS
+				if Message.list[msgM.cmdS] == nil then
+					Message.list[msgM.cmdS] = {}
+				end
+				Message.list[msgM.cmdS][#Message.list[msgM.cmdS] + 1] = msgM
+				-- for ALLMSG
+				if Message.list["ALLMSG"] == nil then
+					Message.list["ALLMSG"] = {}
+				end
+				Message.list["ALLMSG"][#Message.list["ALLMSG"] + 1] = msgM
 			end
-			local i = #Message.list[msgM.cmdS] + 1
-			Message.list[msgM.cmdS][i] = msgM
 		end
 	end
-	Message.list.ListArranged = true
 end
 
 function Message.send(toIDS, cmdS, dataT)
-	Message.sendTable{
-		toS = toIDS,
-		fromS = Message.myIDS(),
+	if Message.waitToSend[toIDS] == nil then
+		Message.waitToSend[toIDS] = {}
+	end
+
+	Message.waitToSend[toIDS][#Message.waitToSend[toIDS] + 1] = {
 		cmdS = cmdS,
 		dataT = dataT,
 	}
 end
 
 function Message.getAM(fromS, cmdS)
-	if Message.list.ListArranged == nil then
-		Message.arrange()
-	end
-
 	local listAM = {}
 	local i = 0
-	local searchList
-	if cmdS == "ALLMSG" then searchList = Message.list
-		                else searchList = Message.list[cmdS] or {} end
+	local searchList = Message.list[cmdS] or {}
 	for iN, msgM in ipairs(searchList) do
 		if msgM.toS == Message.myIDS() or msgM.toS == "ALLMSG" then
 		if fromS == "ALLMSG" or fromS == msgM.fromS then

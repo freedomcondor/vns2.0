@@ -24,11 +24,13 @@
       </actuators>
       <sensors>
         <pipuck_differential_drive implementation="default" />
+        <pipuck_system implementation="default" />
         <pipuck_rangefinders implementation="default" show_rays="true" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="testing/Move/pipuck.lua" />
+      <params script="testing/move/pipuck.lua" />
     </lua_controller>
+
      <!-- Drone Controller -->
     <lua_controller id="drone">
       <actuators>
@@ -39,11 +41,12 @@
         <wifi implementation="default" />
       </actuators>
       <sensors>
+        <drone_system implementation="default" />
         <drone_cameras_system implementation="default" show_frustum="true" show_tag_rays="true" />
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="testing/Move/drone.lua" />
+      <params script="testing/move/drone.lua" />
     </lua_controller>
   </controllers>
 
@@ -56,44 +59,28 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="10, 10, 2.5" center="0, 0, 1">
+  <arena size="1.5, 4, 2.5" center="0, 0, 1">
     <floor id="floor" source="loop_functions" pixels_per_meter="1" />
-    <!-- add the arena walls -->
-    <box id="north" size="0.05,9.95,0.1" movable="false">
-      <body position="4.975,0.025,0"  orientation="0,0,0" />
-    </box>
-    <box id="east" size="9.95,0.05,0.1" movable="false">
-      <body position="0.025,-4.975,0"  orientation="0,0,0" />
-    </box>
-    <box id="south" size="0.05,9.95,0.1" movable="false">
-      <body position="-4.975,-0.025,0"  orientation="0,0,0" />
-    </box>
-    <box id="west" size="9.95,0.05,0.1" movable="false">
-      <body position="-0.025,4.975,0"  orientation="0,0,0" />
-    </box>
+
     <!-- add drones -->
-    <!--distribute>
-      <position method="grid" center="0,0,0" distances="1.5,1.5,0" layout="5,1,1" />
-      <orientation method="uniform" min="0,0,0" max="360,0,0" />
-      <entity quantity="5" max_trials="5">
-        <drone id="drone">
-          <controller config="drone"/>
-        </drone>
-      </entity>
-    </distribute-->
     <drone id="drone0">
-      <body position="-3,0,0" orientation="0,0,0"/>
+      <body position="-0.5,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone1">
-      <body position="-2,1,0" orientation="0,0,0"/>
+      <body position="-0.5,1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <!-- add pi-puck robots -->
+    <pipuck id="pipuck0">
+      <body position="-0.5,-1,0" orientation="0,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
+
     <pipuck id="pipuck1">
-      <body position="-3,0,0" orientation="90,0,0"/>
+      <body position="-0.5,-1.5,0" orientation="0,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 

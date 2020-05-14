@@ -4,19 +4,31 @@ package.path = package.path .. ";Tools/?.lua"
 
 DMSG = require("DebugMessage")
 
-require("pipuckAPI")
-local VNS = require("VNS")
+api = require("pipuckAPI")
 
 DMSG.enable()
 --require("Debugger")
 
 --local vns
 function init()
-	linkPipuckInterface(VNS)
 end
 
 function step()
-	pipuck_move(vector3(1, 0, 0), vector3(0, 0, 0.1))
+	DMSG(robot.id, "-----------------------")
+	api.preStep()
+	local speed = 1 / 100
+	if api.stepCount > 20 then
+		if robot.id == "pipuck0" then
+			--api.pipuckSetWheelSpeed(speed, speed)
+			--api.pipuckSetRotationSpeed(0, 3.1415926/100 * 4)
+			--api.pipuckSetSpeed(0, 1/1000)
+			api.move(vector3(1/100,0,0), vector3(0,0,math.pi/100))
+		else
+			api.pipuckSetWheelSpeed(speed, speed)
+			--api.pipuckSetSpeed(0, 3.1415926)
+		end
+	end
+	api.postStep()
 end
 
 function reset() end
