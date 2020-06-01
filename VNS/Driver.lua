@@ -3,122 +3,150 @@
 local Driver = {}
 
 function Driver.create(vns)
-	vns.goalSpeed = {
-		positionV3 = vector3(),
-		orientationV3 = vector3(),
+	vns.goal = {
+		positionV3 = nil,
+		orientationQ = nil,
+		transV3 = vector3(),
+		rotateV3 = vector3(),
 	}
 end
 
 function Driver.addChild(vns, robotR)
-	robotR.goalSpeed = {
-		positionV3 = vector3(),
-		orientationV3 = vector3(),
+	robotR.goal = {
+		positionV3 = robotR.positionV3,
+		orientationQ = robotR.orientationQ,
+		transV3 = vector3(),
+		rotateV3 = vector3(),
 	}
 end
 
 function Driver.prestep(vns)
-	vns.goalSpeed = {
-		positionV3 = vector3(),
-		orientationV3 = vector3(),
-	}
+	vns.goal.positionV3 = nil
+	vns.goal.orientationQ = nil
+	vns.goal.transV3 = vector3()
+	vns.goal.rotateV3 = vector3()
+
 	for idS, childR in pairs(vns.childrenRT) do
-		childR.goalSpeed = {
-			positionV3 = vector3(),
-			orientationV3 = vector3(),
-		}
+		childR.goal.positionV3 = robotR.positionV3
+		childR.goal.orientationQ = robotR.orientationQ
+		childR.goal.transV3 = vector3()
+		childR.goal.rotateV3 = vector3()
 	end
 end
 
 function Driver.deleteParent(vns)
-	vns.goalPoint = nil
+	vns.goal = {
+		positionV3 = nil,
+		orientationQ = nil,
+		transV3 = vector3(),
+		rotateV3 = vector3(),
+	}
 end
 
 function Driver.step(vns)
-	local self_transV3 = vector3()
-	local self_rotateV3 = vector3()
+	-- receive goal from parent
 	if vns.parentR ~= nil then
 		for _, msgM in pairs(vns.Msg.getAM(vns.parentR.idS, "drive")) do
-			-- a drive message data is:
-			--	{ 	transV3, rotateV3,
-			--		positionV3, orientationQ
-			--	}
-			local transV3 = msgM.dataT.transV3:rotate(vns.parentR.orientationQ)
-			local rotateV3 = msgM.dataT.rotateV3:rotate(vns.parentR.orientationQ)
+			local receivedPositionV3 = vns.api.virtualFrame.V3_RtoV(
+				vector3(msgM.dataT.positionV3):rotate(
+					vns.api.virtualFrame.Q_VtoR(vns.parentR.orientationQ)
+				) + 
+				vns.api.virtualFrame.V3_VtoR(vns.parentR.positionV3)
+			)
 
-			self_transV3 = transV3
-			self_rotateV3 = rotateV3
+			local receivedOrientationQ = vns.api.virtualFrame.Q_RtoV(
+				msgM.dataT.orientationQ * vns.api.virtualFrame.Q_VtoR(vns.parentR.orientationQ)
+			)
 
-			transV3 = transV3 + vns.goalSpeed.positionV3
-			rotateV3 = rotateV3 + vns.goalSpeed.orientationV3
+			local receivedTransV3 = vns.api.virtualFrame.V3_RtoV(
+				vector3(msgM.dataT.transV3):rotate(
+					vns.api.virtualFrame.Q_VtoR(vns.parentR.orientationQ)
+				)
+			)
 
-			--[[
-			vns.goalPoint = {
-				positionV3 = msgM.dataT.positionV3:rotate(vns.parentR.orientationQ) + 
-				             vns.parentR.positionV3,
-				orientationQ = msgM.dataT.orientationQ * vns.parentR.orientationQ
-			}
-			--]]
+			local receivedRotateV3 = vns.api.virtualFrame.V3_RtoV(
+				vector3(msgM.dataT.rotateV3):rotate(
+					vns.api.virtualFrame.Q_VtoR(vns.parentR.orientationQ)
+				)
+			)
+
+		print(receivedOrientationQ)
+		vns.api.debug.drawArrow("green", 
+		     vns.api.virtualFrame.V3_VtoR(receivedPositionV3),
+		     vns.api.virtualFrame.V3_VtoR(receivedPositionV3 + vector3(1,0,0):rotate(receivedOrientationQ))
+		)
+
+
+			-- calc speed
+			local goalPointTransV3, goalPointRotateV3
+
+			local speed = 0.1
+			local threshold = 0.35
+			local dV3 = receivedPositionV3
+			dV3.z = 0
+			local d = dV3:length()
+			if d > threshold then 
+				goalPointTransV3 = dV3:normalize() * speed
+			elseif d == 0 then
+				goalPointTransV3 = vector3()
+			else
+				goalPointTransV3 = dV3:normalize() * speed * (d / threshold)
+			end
+
+			local rotateQ = receivedOrientationQ
+			local angle, axis = rotateQ:toangleaxis()
+			if angle ~= angle then angle = 0 end -- sometimes toangleaxis returns nan
+
+			if angle > math.pi then angle = angle - math.pi * 2 end
+			local goalPointRotateV3 = axis * angle
+
+			local transV3 = goalPointTransV3 + receivedTransV3 + vns.goal.transV3
+			local rotateV3 = goalPointRotateV3 + receivedRotateV3 + vns.goal.rotateV3
+
 			Driver.move(transV3, rotateV3)
 		end
 	else
 		local transV3 = vector3()
 		local rotateV3 = vector3()
-		self_transV3 = transV3 
-		self_rotateV3 = rotateV3
 
-		transV3 = transV3 + vns.goalSpeed.positionV3
-		rotateV3 = rotateV3 + vns.goalSpeed.orientationV3
+		transV3 = transV3 + vns.goal.transV3
+		rotateV3 = rotateV3 + vns.goal.rotateV3
 
 		Driver.move(transV3, rotateV3)
 	end
 
 	-- send drive to children
 	for _, robotR in pairs(vns.childrenRT) do
-		local child_transV3, child_rotateV3
-
 		if robotR.trajectory ~= nil then
 			-- TODO trajectory
 			child_transV3 = vector3()
 			child_rotateV3 = vector3()
-		elseif robotR.goalPoint ~= nil then
-			local speed = 0.1
-			local threshold = 0.35
-
-			local goalPointTransV3, goalPointRotateV3
-
-			local dV3 = robotR.goalPoint.positionV3 - robotR.positionV3
-			dV3.z = 0
-			local d = dV3:length()
-			if d > threshold then 
-				goalPointTransV3 = dV3:normalize() * speed
-			else 
-				goalPointTransV3 = dV3:normalize() * speed * (d / threshold)
-			end
-
-			local rotateQ = robotR.orientationQ:inverse() * robotR.goalPoint.orientationQ
-			local angle, axis = rotateQ:toangleaxis()
-			if angle > math.pi then angle = angle - math.pi * 2 end
-			local goalPointRotateV3 = axis * angle
-
-			child_transV3 = goalPointTransV3
-			child_rotateV3 = goalPointRotateV3
-		else
-			child_transV3 = vector3()
-			child_rotateV3 = vector3()
+			child_positionV3 = vector3()
+			child_orientationQ = quaternion()
+		else 
+			child_positionV3 = robotR.goal.positionV3
+			child_orientationQ = robotR.goal.orientationQ
+			child_transV3 = robotR.goal.transV3
+			child_rotateV3 = robotR.goal.rotateV3
 		end
 
-		child_transV3 = child_transV3 + self_transV3
-		child_rotateV3 = child_rotateV3 + self_rotateV3
+		--child_transV3 = child_transV3 + self_transV3
+		--child_rotateV3 = child_rotateV3 + self_rotateV3
 
-		child_transV3 = child_transV3 + robotR.goalSpeed.positionV3
-		child_rotateV3 = child_rotateV3 + robotR.goalSpeed.orientationV3
+		--child_transV3 = child_transV3 + robotR.goalSpeed.positionV3
+		--child_rotateV3 = child_rotateV3 + robotR.goalSpeed.orientationV3
+
+print("child_positionV3 = ", child_positionV3)
+print("child_orientationQ = ", child_orientationQ)
+print("send position = ", vns.api.virtualFrame.V3_VtoR(child_positionV3))
+print("send_orientationQ = ", vns.api.virtualFrame.Q_VtoR(child_orientationQ))
 
 		vns.Msg.send(robotR.idS, "drive",
 		{
-			transV3 = child_transV3,
-			rotateV3 = child_rotateV3,
-			--positionV3 = robotR.goalPoint.positionV3,
-			--orientationQ = robotR.goalPoint.orientationQ,
+			transV3 = vns.api.virtualFrame.V3_VtoR(child_transV3),
+			rotateV3 = vns.api.virtualFrame.V3_VtoR(child_rotateV3),
+			positionV3 = vns.api.virtualFrame.V3_VtoR(child_positionV3),
+			orientationQ = vns.api.virtualFrame.Q_VtoR(child_orientationQ),
 		})
 	end
 end

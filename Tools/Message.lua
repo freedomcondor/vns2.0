@@ -43,16 +43,12 @@ function Message.postStep()
 	end
 end
 
-function Message.prestep()
-	Message.arrange()
-end
-
 function Message.arrange()
 	for iN, msgArray in ipairs(Message.getTablesAT()) do
 		if msgArray.toS == Message.myIDS() or msgArray.toS == "ALLMSG" then
 			for jN, msgM in ipairs(msgArray.message) do
 				msgM.fromS = msgArray.fromS
-				msgM.ToS = msgArray.toS
+				msgM.toS = msgArray.toS
 				if Message.list[msgM.cmdS] == nil then
 					Message.list[msgM.cmdS] = {}
 				end
@@ -82,6 +78,7 @@ function Message.getAM(fromS, cmdS)
 	local listAM = {}
 	local i = 0
 	local searchList = Message.list[cmdS] or {}
+
 	for iN, msgM in ipairs(searchList) do
 		if msgM.toS == Message.myIDS() or msgM.toS == "ALLMSG" then
 		if fromS == "ALLMSG" or fromS == msgM.fromS then
@@ -90,7 +87,6 @@ function Message.getAM(fromS, cmdS)
 			listAM[i] = msgM
 		end end end
 	end
-
 	return listAM
 end
 

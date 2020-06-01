@@ -28,7 +28,7 @@
         <pipuck_rangefinders implementation="default" show_rays="true" />
         <wifi implementation="default" show_rays="false" />
       </sensors>
-      <params script="testing/message/pipuck.lua" />
+      <params script="testing/drive/pipuck.lua" />
     </lua_controller>
 
      <!-- Drone Controller -->
@@ -46,7 +46,7 @@
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
-      <params script="testing/message/drone.lua" />
+      <params script="testing/drive/drone.lua" />
     </lua_controller>
   </controllers>
 
@@ -59,28 +59,28 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="1.5, 4, 2.5" center="0, 0, 1">
+  <arena size="10, 10, 2.5" center="0, 0, 1">
     <floor id="floor" source="loop_functions" pixels_per_meter="1" />
 
     <!-- add drones -->
-    <drone id="drone0">
+    <drone id="drone1">
       <body position="-0.5,0,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
-    <drone id="drone1">
+    <drone id="drone2">
       <body position="-0.5,1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <!-- add pi-puck robots -->
-    <pipuck id="pipuck0" wifi_medium="wifi" tag_medium="tags">
-      <body position="-0.5,-1,0" orientation="0,0,0"/>
+    <pipuck id="pipuck1" wifi_medium="wifi" tag_medium="tags">
+      <body position="-0.3,1,0" orientation="0,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 
-    <pipuck id="pipuck1" wifi_medium="wifi" tag_medium="tags">
-      <body position="-0.5,-1.5,0" orientation="0,0,0"/>
+    <pipuck id="pipuck2" wifi_medium="wifi" tag_medium="tags">
+      <body position="-0.5,-1.2,0" orientation="0,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 

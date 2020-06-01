@@ -3,9 +3,12 @@ vim coding.sh -c "
 	vsp RobotAPI/pipuckAPI.lua
 	tabnew RobotAPI/commonAPI.lua
 
-	tabnew testing/message/vns.argos
-	tabnew testing/message/drone.lua
-	tabnew testing/message/pipuck.lua
+	tabnew VNS/DroneConnector.lua
+	vsp VNS/PipuckConnector.lua
+
+	tabnew testing/connect/vns.argos
+	tabnew testing/connect/drone.lua
+	tabnew testing/connect/pipuck.lua
 "
 <<COMMENT
 	tabnew testing/Obstacle/vns.argos

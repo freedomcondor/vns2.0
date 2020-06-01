@@ -24,10 +24,8 @@ function Connector.prestep(vns)
 end
 
 function Connector.recruit(vns, robotR)
-	local numberN = math.random()
-
-	local scaleN = 0
-	if vns.scale ~= nil then scaleN = vns.scale:totalNumber() end
+	local numberN = robot.random.uniform()
+	local scaleN = vns.scale:totalNumber()
 
 	vns.Msg.send(robotR.idS, "recruit", {	
 		positionV3 = robotR.positionV3,

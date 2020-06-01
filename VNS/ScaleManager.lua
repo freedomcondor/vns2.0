@@ -15,11 +15,12 @@ local ScaleManager = {}
 ScaleManager.Scale = require("Scale")
 
 function ScaleManager.create(vns)
-	vns.scale = ScaleManager.Scale:new()
+	ScaleManager.reset(vns)
 end
 
 function ScaleManager.reset(vns)
 	vns.scale = ScaleManager.Scale:new()
+	vns.scale[vns.robotTypeS] = 1
 end
 
 function ScaleManager.addChild(vns, robotR)

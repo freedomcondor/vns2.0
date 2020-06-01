@@ -79,13 +79,22 @@ function VNS.reset(vns)
 	end
 end
 
-function VNS.prestep(vns)
-	vns.Msg.prestep(vns)
+function VNS.preStep(vns)
+	VNS.Msg.preStep()
 	for i, module in ipairs(VNS.Modules) do
-		if type(module.prestep) == "function" then
-			module.prestep(vns)
+		if type(module.preStep) == "function" then
+			module.preStep(vns)
 		end
 	end
+end
+
+function VNS.postStep(vns)
+	for i, module in ipairs(VNS.Modules) do
+		if type(module.postStep) == "function" then
+			module.postStep(vns)
+		end
+	end
+	vns.Msg.postStep()
 end
 
 function VNS.addChild(vns, robotR)

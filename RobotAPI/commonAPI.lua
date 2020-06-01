@@ -24,7 +24,7 @@ function api.debug.showVirtualFrame()
 	api.debug.drawArrow(
 		"red", 
 		vector3(0,0,0), 
-		vector3(1,0,0):rotate(api.virtualFrame.orientationQ)
+		vector3(1,0,0.1):rotate(api.virtualFrame.orientationQ)
 	)
 end
 
@@ -44,9 +44,11 @@ end
 api.virtualFrame = {}
 api.virtualFrame.orientationQ = quaternion()
 function api.virtualFrame.rotateInSpeed(speedV3)
+	local axis = vector3(speedV3):normalize()
+	if speedV3:length() == 0 then axis = vector3(1,0,0) end
 	api.virtualFrame.orientationQ = 
 		quaternion(speedV3:length() * api.time.period,
-		           vector3(speedV3):normalize()
+		           axis
 		) * api.virtualFrame.orientationQ
 end
 
@@ -89,6 +91,8 @@ function api.linkRobotInterface(VNS)
 	VNS.Msg.myIDS = function()
 		return robot.id
 	end
+
+	VNS.Driver.move = api.move
 end
 
 return api

@@ -24,7 +24,8 @@ function step()
 			--api.pipuckSetSpeed(0, 1/1000)
 			api.move(vector3(1/100,0,0), vector3(0,0,math.pi/100))
 		else
-			api.pipuckSetWheelSpeed(speed, speed)
+			api.move(vector3(1/100,0,0), vector3())
+			--api.pipuckSetWheelSpeed(speed, speed)
 			--api.pipuckSetSpeed(0, 3.1415926)
 		end
 	end

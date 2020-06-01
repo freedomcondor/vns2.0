@@ -155,15 +155,14 @@ function api.droneDetectTags()
 	return tags
 end
 
-function api.droneAddSeenRobots(tags)
-	-- this function adds robots (in virtual frame) from seen tags (in real robot frames)
+function api.droneAddSeenRobots(tags, seenRobotsInRealFrame)
+	-- this function adds robots (in real frame) from seen tags (in real robot frames)
 	local robotTypeIndex = {
 		{index = 0, typeS = "block"},
 		{index = 40, typeS = "pipuck"},
 		{index = 60, typeS = "builderbot"},
 	}
 
-	local seenRobots = {}
 	for i, tag in ipairs(tags) do
 		local robotTypeS = nil
 		for i, item in ipairs(robotTypeIndex) do
@@ -172,6 +171,7 @@ function api.droneAddSeenRobots(tags)
 
 		if robotTypeS ~= nil then
 			local idS = robotTypeS .. math.floor(tag.id)
+			--[[
 			seenRobots[idS] = {
 				idS = idS,
 				robotTypeS = robotTypeS,
@@ -179,9 +179,15 @@ function api.droneAddSeenRobots(tags)
 				orientationQ = api.virtualFrame.Q_RtoV(tag.orientationQ),
 				-- RtoV : from real coordinate frame to virtual frame
 			}
+			--]]
+			seenRobotsInRealFrame[idS] = {
+				idS = idS,
+				robotTypeS = robotTypeS,
+				positionV3 = tag.positionV3,
+				orientationQ = tag.orientationQ,
+			}
 		end
 	end
-	return seenRobots
 end
 
 --[[
