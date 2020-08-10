@@ -48,13 +48,38 @@
       </sensors>
       <params script="testing/connect/drone.lua" />
     </lua_controller>
+
+    <lua_controller id="builderbot">
+      <actuators>
+        <builderbot_electromagnet_system implementation="default" />
+        <builderbot_differential_drive implementation="default" />
+        <builderbot_lift_system implementation="default" />
+        <builderbot_nfc implementation="default" />
+        <wifi implementation="default" />
+        <debug implementation="default">
+          <interface id="draw" />
+        </debug>
+      </actuators>
+      <sensors>
+        <builderbot_camera_system implementation="default"
+          show_frustum="true" show_tag_rays="true" show_led_rays="false" />
+        <builderbot_rangefinders implementation="default" show_rays="true" light_medium="lights"/>
+        <builderbot_differential_drive implementation="default"/>
+        <builderbot_electromagnet_system implementation="default" />
+        <builderbot_lift_system implementation="default" />
+        <builderbot_nfc implementation="default" show_rays="false" />
+        <builderbot_system implementation="default" />
+        <wifi implementation="default" />
+      </sensors>
+      <params script="testing/connect/pipuck.lua" />
+    </lua_controller> 
   </controllers>
 
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
-                  label="vns_loop_functions"/>
+  <!--loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
+                  label="vns_loop_functions"/-->
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->

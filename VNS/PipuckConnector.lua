@@ -13,6 +13,7 @@ function PipuckConnector.step(vns)
 	-- For any sight report, update quadcopter and other pipucks to seenRobots
 	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "reportSight")) do
 		if msgM.dataT.mySight[vns.idS] ~= nil then
+			-- I'm seen in this report sight, add this drone into seenRobots
 			local common = msgM.dataT.mySight[vns.idS]
 			local quad = {
 				idS = msgM.fromS,
@@ -42,13 +43,6 @@ function PipuckConnector.step(vns)
 				end
 			end
 		end
-	end
-
-	for i, robot in pairs(vns.connector.seenRobots) do
-		vns.api.debug.drawArrow("red", 
-			vector3(robot.positionV3),
-			vector3(robot.positionV3) + vector3(1,0,0):rotate(robot.orientationQ)
-		)
 	end
 
 	-- convert vns.connector.seenRobots from real frame into virtual frame
