@@ -53,8 +53,8 @@
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
-                  label="vns_loop_functions"/>
+  <!--loop_functions library="../argos3-vns2/build/loop_functions/libvns_loop_functions"
+                  label="vns_loop_functions"/-->
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->

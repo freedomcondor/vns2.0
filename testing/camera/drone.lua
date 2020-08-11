@@ -7,6 +7,8 @@ DMSG = require("DebugMessage")
 local api = require("droneAPI")
 --local VNS = require("VNS")
 
+pairs = require("RandomPairs")
+
 DMSG.enable()
 --require("Debugger")
 
@@ -14,6 +16,7 @@ DMSG.enable()
 function init()
 	api.init()
 end
+
 
 function step()
 	DMSG(robot.id, "-----------------------")
@@ -27,13 +30,25 @@ function step()
 	end
 	--]]
 	tags = api.droneDetectTags()
-	seenRobots = api.droneAddSeenRobots(tags)
+	local seenRobots = {}
+	api.droneAddSeenRobots(tags, seenRobots)
 	for i, robot in pairs(seenRobots) do
 		api.debug.drawArrow("blue", vector3(), api.virtualFrame.V3_VtoR(vector3(robot.positionV3)))
 	end
 
 	api.droneMaintainHeight(1.5)
 	api.postStep()
+
+	-- pairs_test
+	local test_table = {
+		a = "a",
+		b = "b",
+		c = "c",
+		d = 1111,
+	}
+	for i, v in pairs(test_table) do
+		print(i, v)
+	end
 end
 
 function reset()
