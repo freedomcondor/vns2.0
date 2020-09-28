@@ -12,9 +12,9 @@ end
 function PipuckConnector.step(vns)
 	-- For any sight report, update quadcopter and other pipucks to seenRobots
 	for _, msgM in ipairs(vns.Msg.getAM("ALLMSG", "reportSight")) do
-		if msgM.dataT.mySight[vns.idS] ~= nil then
+		if msgM.dataT.mySight[vns.Msg.myIDS()] ~= nil then
 			-- I'm seen in this report sight, add this drone into seenRobots
-			local common = msgM.dataT.mySight[vns.idS]
+			local common = msgM.dataT.mySight[vns.Msg.myIDS()]
 			local quad = {
 				idS = msgM.fromS,
 				positionV3 = 
@@ -31,14 +31,15 @@ function PipuckConnector.step(vns)
 
 			-- add other pipucks to seenRobots
 			for idS, R in pairs(msgM.dataT.mySight) do
-				if idS ~= vns.idS and vns.connector.seenRobots[idS] == nil then -- TODO average
+				if idS ~= vns.Msg.myIDS() and vns.connector.seenRobots[idS] == nil and 
+				   R.robotTypeS ~= "drone" then -- TODO average
 					vns.connector.seenRobots[idS] = {
 						idS = idS,
 						positionV3 = quad.positionV3 + 
 						             vector3(R.positionV3):rotate(quad.orientationQ),
 						--orientationQ = quad.orientationQ * R.orientationQ,
 						orientationQ = R.orientationQ * quad.orientationQ,
-						robotTypeS = "pipuck",
+						robotTypeS = R.robotTypeS,
 					}
 				end
 			end

@@ -24,11 +24,14 @@ function api.debug.showVirtualFrame()
 	api.debug.drawArrow(
 		"red", 
 		vector3(0,0,0), 
-		vector3(1,0,0.1):rotate(api.virtualFrame.orientationQ)
+		vector3(0.1,0,0.1):rotate(api.virtualFrame.orientationQ)
 	)
 end
 
 ---- Step Function ----------------------------
+function api.init()
+end
+
 function api.preStep()
 	api.stepCount = api.stepCount + 1
 	api.processTime()

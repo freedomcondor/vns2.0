@@ -51,10 +51,9 @@ function VNS.create(myType)
 	--     robotTypeS = "drone",
 	-- }
 
-	local vns = {
-		idS = VNS.Msg.myIDS(),
-		robotTypeS = myType,
-	}
+	local vns = {}
+	vns.robotTypeS = myType
+
 	setmetatable(vns, VNS)
 
 	for i, module in ipairs(VNS.Modules) do
@@ -69,8 +68,10 @@ end
 
 function VNS.reset(vns)
 	vns.parentR = nil
-	vns.brainS = VNS.Msg.myIDS()
 	vns.childrenRT = {}
+
+	vns.idS = VNS.Msg.myIDS()
+	vns.idN = robot.random.uniform()
 
 	for i, module in ipairs(VNS.Modules) do
 		if type(module.reset) == "function" then
@@ -89,7 +90,8 @@ function VNS.preStep(vns)
 end
 
 function VNS.postStep(vns)
-	for i, module in ipairs(VNS.Modules) do
+	for i = #VNS.Modules, 1, -1 do
+		local module = VNS.Modules[i]
 		if type(module.postStep) == "function" then
 			module.postStep(vns)
 		end
@@ -105,7 +107,8 @@ function VNS.addChild(vns, robotR)
 	end
 end
 function VNS.deleteChild(vns, idS)
-	for i, module in ipairs(VNS.Modules) do
+	for i = #VNS.Modules, 1, -1 do
+		local module = VNS.Modules[i]
 		if type(module.deleteChild) == "function" then
 			module.deleteChild(vns, idS)
 		end
@@ -120,7 +123,8 @@ function VNS.addParent(vns, robotR)
 	end
 end
 function VNS.deleteParent(vns)
-	for i, module in ipairs(VNS.Modules) do
+	for i = #VNS.Modules, 1, -1 do
+		local module = VNS.Modules[i]
 		if type(module.deleteParent) == "function" then
 			module.deleteParent(vns)
 		end
@@ -135,6 +139,7 @@ function VNS.setGene(vns, morph)
 	end
 end
 
+---- Behavior Tree Node ------------------------------------------
 function VNS.create_vns_node_without_drive(vns)
 	local pre_connector_node
 	if vns.robotTypeS == "drone" then

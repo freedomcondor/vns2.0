@@ -8,10 +8,11 @@ local api = require("droneAPI")
 local VNS = require("VNS")
 local BT = require("luabt")
 
+pairs = require("RandomPairs")
+
 DMSG.enable()
 --require("Debugger")
-
-Message = VNS.Msg
+Messager = VNS.Msg
 
 local bt
 --local vns
@@ -19,14 +20,20 @@ local bt
 function init()
 	api.linkRobotInterface(VNS)
 	api.init()
+
 	vns = VNS.create("drone")
 	vns.api = api
 
+	reset()
+end
+
+function reset()
+	vns.reset(vns)
 	bt = BT.create
 		{type = "sequence", children = {
 			VNS.DroneConnector.create_droneconnector_node(vns),
 			VNS.Connector.create_connector_node(vns),
-			VNS.ScaleManager.create_scalemanager_node(vns),
+			--VNS.ScaleManager.create_scalemanager_node(vns),
 		}}
 end
 
@@ -35,7 +42,7 @@ function step()
 	api.preStep()
 	vns.preStep(vns)
 
-	api.move(vector3(0.01, 0, 0), vector3(0,0,math.pi/100))
+	--api.move(vector3(0.01, 0, 0), vector3(0,0,math.pi/100))
 
 	api.droneAddSeenRobots(
 		api.droneDetectTags(),
@@ -44,11 +51,13 @@ function step()
 
 	bt()
 
+	-- draw children location
 	for i, robot in pairs(vns.childrenRT) do
 		api.debug.drawArrow("blue", vector3(), api.virtualFrame.V3_VtoR(vector3(robot.positionV3)))
 	end
 
-	for i, robot in pairs(vns.connector.seenRobots) do
+	-- draw children orientation
+	for i, robot in pairs(vns.childrenRT) do
 		api.debug.drawArrow("green", 
 			api.virtualFrame.V3_VtoR(vector3(robot.positionV3)),
 			api.virtualFrame.V3_VtoR(
@@ -57,15 +66,18 @@ function step()
 		)
 	end
 
-	DMSG(vns.childrenRT)
+	DMSG("vns.idS = ", vns.idS, "idN = ", vns.idN)
+	local parentID
+	if vns.parentR ~= nil then parentID = vns.parentR.idS end
+	DMSG("parent = ", parentID)
+	DMSG("children = ")
+	for idS, _ in pairs(vns.childrenRT) do
+		DMSG("    ", idS)
+	end
 
 	vns.postStep(vns)
 	api.droneMaintainHeight(1.5)
 	api.postStep()
-end
-
-function reset()
-	init()
 end
 
 function destroy()

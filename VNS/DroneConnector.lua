@@ -12,6 +12,7 @@ end
 
 function DroneConnector.step(vns)
 	-- report my sight to all seen pipucks, and drones in parent and children
+	--[[
 	if vns.parentR ~= nil and vns.parentR.robotTypeS == "drone" then
 		vns.Msg.send(vns.parentR.idS, "reportSight", {mySight = vns.connector.seenRobots})
 	end
@@ -25,6 +26,7 @@ function DroneConnector.step(vns)
 	for idS, robotR in pairs(vns.connector.seenRobots) do
 		vns.Msg.send(idS, "reportSight", {mySight = vns.connector.seenRobots})
 	end
+	--]]
 
 	---[[
 	-- broadcast my sight so other drones would see me
@@ -52,7 +54,8 @@ end
 function DroneConnector.calcQuadR(idS, myVehiclesTR, yourVehiclesTR)
 	local quadR = nil
 	for _, robotR in pairs(yourVehiclesTR) do
-		if myVehiclesTR[robotR.idS] ~= nil then
+		if myVehiclesTR[robotR.idS] ~= nil and
+		   myVehiclesTR[robotR.idS].robotTypeS ~= "drone" then
 			myRobotR = myVehiclesTR[robotR.idS]
 			quadR = {
 				idS = idS,

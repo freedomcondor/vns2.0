@@ -6,7 +6,7 @@
   <!-- ************************* -->
   <framework>
     <system threads="0" />
-    <experiment length="0" ticks_per_second="5" random_seed="12345" />
+    <experiment length="0" ticks_per_second="5" random_seed="12340" />
   </framework>
   
   <!-- *************** -->
@@ -42,7 +42,7 @@
       </actuators>
       <sensors>
         <drone_system implementation="default" />
-        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="false" />
+        <drone_cameras_system implementation="default" show_frustum="false" show_tag_rays="true" />
         <drone_flight_system implementation="default" />
         <wifi implementation="default" />
       </sensors>
@@ -64,26 +64,45 @@
 
     <!-- add drones -->
     <drone id="drone1">
-      <body position="-0.5,0,0" orientation="0,0,0"/>
+      <body position="-0.5,-1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
     <drone id="drone2">
+      <body position="-0.5,0,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
+    <drone id="drone3">
       <body position="-0.5,1,0" orientation="0,0,0"/>
       <controller config="drone"/>
     </drone>
 
+    <drone id="drone4">
+      <body position="-0.5,2,0" orientation="0,0,0"/>
+      <controller config="drone"/>
+    </drone>
+
     <!-- add pi-puck robots -->
-    <pipuck id="pipuck1" wifi_medium="wifi" tag_medium="tags">
-      <body position="-0.3,1,0" orientation="0,0,0"/>
+    <pipuck id="pipuck4" wifi_medium="wifi" tag_medium="tags">
+      <body position="-0.3,1.5,0" orientation="0,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
+
+    <pipuck id="pipuck3" wifi_medium="wifi" tag_medium="tags">
+      <body position="-0.5,1.5,0" orientation="0,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 
     <pipuck id="pipuck2" wifi_medium="wifi" tag_medium="tags">
-      <body position="-0.5,-1.2,0" orientation="0,0,0"/>
+      <body position="-0.3,-0.5,0" orientation="0,0,0"/>
       <controller config="pipuck"/>
     </pipuck>
 
+    <pipuck id="pipuck1" wifi_medium="wifi" tag_medium="tags">
+      <body position="-0.5,-0.5,0" orientation="0,0,0"/>
+      <controller config="pipuck"/>
+    </pipuck>
     <!--distribute>
       <position method="uniform" min="-4.5,-4.5,0" max="4.5,4.5,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
